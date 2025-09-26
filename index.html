@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="description"
+      content="LayerD: Decomposing Raster Graphic Designs into Layers"
+    />
+    <meta name="keywords" content="Layer Decomposition, Raster Graphics, Computer Vision" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LayerD: Decomposing Raster Graphic Designs into Layers</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-3QRQFHFW96"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-3QRQFHFW96");
+    </script>
+
+    <link
+      href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="./static/css/bulma.min.css" />
+    <link rel="stylesheet" href="./static/css/bulma-carousel.min.css" />
+    <link rel="stylesheet" href="./static/css/bulma-slider.min.css" />
+    <link rel="stylesheet" href="./static/css/fontawesome.all.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css"
+    />
+    <link rel="stylesheet" href="./static/css/index.css" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script defer src="./static/js/fontawesome.all.min.js"></script>
+    <script src="./static/js/bulma-carousel.min.js"></script>
+    <script src="./static/js/bulma-slider.min.js"></script>
+    <script src="./static/js/index.js"></script>
+    <style>
+      .image-container {
+        text-align: center;
+      }
+
+      .image-container img {
+        /* width: 100%; */
+        height: auto;
+      }
+
+      .caption {
+        margin-bottom: -5px;
+        font-size: 18px;
+        color: #333;
+        /* text-align: left; */
+      }
+
+      .publication-title {
+        font-size: 2.3rem;
+        line-height: 1.2;
+        white-space: nowrap;
+      }
+
+      @media screen and (max-width: 1024px) {
+        .publication-title {
+          font-size: 1.8rem;
+        }
+      }
+
+      @media screen and (max-width: 768px) {
+        .publication-title {
+          font-size: 1.4rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="hero">
+      <div class="hero-body">
+        <div class="container is-max-desktop">
+          <div class="columns is-centered">
+            <div class="column has-text-centered">
+              <h1 class="title is-2 publication-title">
+                LayerD: Decomposing Raster Graphic Designs into Layers
+              </h1>
+              <h1 class="title is-3 publication-conference">ICCV 2025</h1>
+              <div class="is-size-4 publication-authors">
+                <span class="author-block">
+                  <a href="https://tomoyukun.github.io/biography/"
+                    >Tomoyuki Suzuki</a
+                  ><sup>1</sup>,
+                </span>
+                <span class="author-block">
+                  <a href="">Kang-Jun Liu</a><sup>2</sup>,
+                </span>
+                <span class="author-block">
+                  <a href="https://naoto0804.github.io/">Naoto Inoue</a><sup>1</sup>,
+                </span>
+                <span class="author-block">
+                  <a href="https://sites.google.com/view/kyamagu"
+                    >Kota Yamaguchi</a
+                  ><sup>1</sup>
+                </span>
+              </div>
+
+              <div class="is-size-4 publication-authors">
+                <span class="author-block"
+                  ><sup>1</sup><a href="https://www.cyberagent.co.jp/en/"
+                    >CyberAgent</a
+                  >, </span
+                >
+                <span class="author-block"
+                  ><sup>2</sup>Tohoku University</span
+                >
+              </div>
+
+              <div class="column has-text-centered">
+                <div class="publication-links">
+                  <!-- PDF Link. -->
+                  <span class="link-block">
+                    <a
+                      href="https://arxiv.org/abs/"
+                      class="external-link button is-normal is-rounded is-dark"
+                    >
+                      <span class="icon">
+                        <i class="fas fa-file-pdf"></i>
+                      </span>
+                      <span>Paper</span>
+                    </a>
+                  </span>
+                  <!-- Project Page Link. -->
+                  <span class="link-block">
+                    <a
+                      href="https://cyberagentailab.github.io/LayerD/"
+                      class="external-link button is-normal is-rounded is-dark"
+                    >
+                      <span class="icon">
+                        <i class="fas fa-home"></i>
+                      </span>
+                      <span>Project</span>
+                    </a>
+                  </span>
+                  <!-- Code Link. -->
+                  <span class="link-block">
+                    <a
+                      href="https://github.com/CyberAgentAILab/LayerD"
+                      class="external-link button is-normal is-rounded is-dark"
+                    >
+                      <span class="icon">
+                        <i class="fab fa-github"></i>
+                      </span>
+                      <span>Code</span>
+                    </a>
+                  </span>
+                  <!-- Poster Link. -->
+                  <!-- <span class="link-block">
+                    <a
+                      href="#"
+                      class="external-link button is-normal is-rounded is-dark"
+                    >
+                      <span class="icon">
+                        <i class="fas fa-file-pdf"></i>
+                      </span>
+                      <span>Poster</span>
+                    </a>
+                  </span> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero teaser">
+      <div class="container is-max-desktop">
+        <div class="hero-body">
+          <img src="./static/teaser.png" height="100%" />
+        </div>
+        <h2 class="subtitle has-text-justified">
+          LayerD decomposes raster graphic design images into layers, where each design contains various elements such as typographic entities, embellishments, vector shapes, or even image materials.
+          Once decomposed, one can apply image editing operations such as color conversion or translation at the layer level, or further apply other post-processing such as OCR to vectorize each raster layer.
+        </h2>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container is-max-desktop">
+        <!-- Abstract. -->
+        <div class="columns is-centered has-text-centered">
+          <div class="column is-four-fifths">
+            <h2 class="title is-3">Abstract</h2>
+            <div class="content has-text-justified">
+              <p>
+                Designers craft and edit graphic designs in a layer representation, 
+                but layer-based editing becomes impossible once composited into a raster image. 
+                In this work, we propose LayerD, a method to decompose raster graphic designs into layers for re-editable creative workflow. 
+                LayerD addresses the decomposition task by iteratively extracting unoccluded foreground layers. 
+                We propose a simple yet effective refinement approach taking advantage of the assumption that layers often exhibit uniform appearance in graphic designs. 
+                As decomposition is ill-posed and the ground-truth layer structure may not be reliable, we develop a quality metric that addresses the difficulty. 
+                In experiments, we show that LayerD successfully achieves high-quality decomposition and outperforms baselines. 
+                We also demonstrate the use of LayerD with state-of-the-art image generators and layer-based editing.
+              </p>
+            </div>
+          </div>
+        </div>
+        <!--/ Abstract. -->
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container is-max-desktop">
+        <h2 class="title is-3">Decomposition Examples</h2>
+        <p>
+          Below are examples of layer decomposition results by LayerD.
+          The leftmost column shows <b><u>the input images</u></b>, and the other columns show <b><u>the decomposed layers</u></b> from back to front.
+          You can find more results in the paper.
+        </p>
+        <div class="column">
+          <img
+            src="./static/samples/test_001532_5bf8264d8caf671e1c175e19.png"
+            height="100%"
+            style="margin-bottom: 15px;"
+          />
+          <img
+            src="./static/samples/test_000123_5d960598abc8ea6d1c34cc4a.png"
+            height="100%"
+            style="margin-bottom: 15px;"
+          />
+          <img
+            src="./static/samples/test_000064_5cd69ab27d4459dfe14320d8.png"
+            height="100%"
+            style="margin-bottom: 15px;"
+          />
+          <img
+            src="./static/samples/test_000289_5dbbf802abc8ea6d1c0afb92.png"
+            height="100%"
+            style="margin-bottom: 15px;"
+          />
+          <img
+            src="./static/samples/test_000261_5915821995a7a863ddcd8015.png"
+            height="100%"
+            style="margin-bottom: 15px;"
+          />
+          <img
+            src="./static/samples/test_000707_5f5b5a3da637ee11e3e5adbf.png"
+            height="100%"
+            style="margin-bottom: 15px;"
+          />
+          <img
+            src="./static/samples/test_000735_5c94fb2a85ea3c16f9cddf6c.png"
+            height="100%"
+            style="margin-bottom: 15px;"
+          />
+          <img
+            src="./static/samples/test_001546_5b9a51ce18654940f74bf296.png"
+            height="100%"
+            style="margin-bottom: 15px;"
+          />
+          <img
+            src="./static/samples/test_000458_58aeb41795a7a863ddcc846d.png"
+            height="100%"
+            style="margin-bottom: 15px;"
+          />
+          <img
+            src="./static/samples/test_000330_5952784b95a7a863ddcdf2b1.png"
+            height="100%"
+            style="margin-bottom: 15px;"
+          />
+          <img
+            src="./static/samples/test_000911_5ea2d990499b85dcc7aaeb92.png"
+            height="100%"
+            style="margin-bottom: 15px;"
+          />
+          <img
+            src="./static/samples/test_001846_5fb66d81a637ee11e331eff7.png"
+            height="100%"
+            style="margin-bottom: 15px;"
+          />
+          <img
+            src="./static/samples/test_000413_5c459ce5048d064dbca8bc68.png"
+            height="100%"
+            style="margin-bottom: 15px;"
+          />
+          <img
+            src="./static/samples/test_001168_5e04c0ee9fea0cc374a3e279.png"
+            height="100%"
+            style="margin-bottom: 15px;"
+          />
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container is-max-desktop">
+        <h2 class="title is-3">Approach</h2>
+        <p>
+          LayerD is simple: it repeatedly extracts top layers and completes backgrounds until all layers are extracted.
+          We define top layers as all unoccluded layers in the front.
+          LayerD also includes layer refinement processes for each step, which leverage the flat color assumption of layers in graphic designs.
+        </p>
+        <div class="column is-centered">
+          <img src="./static/method.png" height="100%" />
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container is-max-desktop">
+        <h2 class="title is-3">Application</h2>
+        <p>
+          Once decomposed by LayerD, the layers can be easily manipulated for various editing tasks.
+          Below are examples of layer-based editing applications enabled by our decomposition.
+        </p>
+        <div class="image-container">
+          <img
+            src="./static/application/application-examples-vis.svg"
+            style="width: 100%; height: auto; margin-bottom: 15px;"
+            alt="Application Examples"
+          />
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="Citation">
+      <div class="container is-max-desktop content">
+        <h2 class="title">Citation</h2>
+        <pre><code>@inproceedings{suzuki2025layerd,
+  title={LayerD: Decomposing Raster Graphic Designs into Layers},
+  author={Suzuki, Tomoyuki and Liu, Kang-Jun and Inoue, Naoto and Yamaguchi, Kota},
+  booktitle={ICCV},
+  year={2025}
+}</code></pre>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="columns is-centered">
+          <div class="column is-8">
+            <div class="columns is-centered">
+              <div class="content">
+                The website is based on the template from
+                <a href="https://nerfies.github.io/">Nerfies</a>. Thanks to the
+                authors.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
