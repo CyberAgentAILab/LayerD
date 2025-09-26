@@ -1,0 +1,79 @@
+defaults:
+  - _self_
+  - model: birefnet_l
+
+out_dir: ??? # OmegaConf mandatory field: must be specified at runtime (see: https://omegaconf.readthedocs.io/en/2.1_branch/usage.html#mandatory-values)
+data_root: ??? # OmegaConf mandatory field: must be specified at runtime
+epochs: 35
+finetune_last_epochs: -20
+is_matting: false
+valid_step: 1
+resume: false
+image_size: 512 # int for square, or [width, height] for rectangle
+seed: 7
+use_accelerate: false
+mixed_precision: no # only works when use_accelerate is true ('no', 'fp16', 'bf16')
+gradient_accumulation_steps: 1 # only works when use_accelerate is true
+compile: null # default, reduce-overhead, and max-autotune are supported
+dist: false
+device: cpu
+batch_size: 4
+save_step: 5
+
+optimizer:
+  name: AdamW
+  params:
+    lr: 1e-5
+    weight_decay: 1e-2
+scheduler:
+  name: "off"
+  params: {}
+
+loss:
+  pix_loss:
+    name: PixLoss
+    params:
+      lambdas_pix_last:
+        bce: 30
+        iou: 0.5
+        mae: 0
+        mse: 0
+        ssim: 10
+  gdt_loss:
+    name: BCELoss
+    params: {}
+
+metrics:
+  MAE:
+    normalize_value: 1
+  SSIM:
+    data_range: 1
+    normalize_value: 1
+
+dataset:
+  train:
+    name: MattingDataset
+    params:
+      root: ${data_root}
+      image_size: ${image_size}
+      split: train
+      is_train: true
+      preproc_methods: [flip, enhance, rotate, pepper]
+    batch_size: ${batch_size}
+    pin_memory: true
+    num_workers: 4
+    shuffle: false
+    drop_last: true
+  val:
+    name: MattingDataset
+    params:
+      root: ${data_root}
+      image_size: ${image_size}
+      split: validation
+      is_train: false
+      preproc_methods: []
+    batch_size: 1
+    pin_memory: true
+    num_workers: 1
+    shuffle: false
+    drop_last: true
