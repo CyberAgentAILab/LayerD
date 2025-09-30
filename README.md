@@ -19,7 +19,7 @@ ICCV 2025
 
 <div align="center">
 
-[![arxiv paper](https://img.shields.io/badge/arxiv-paper-orange)](https://arxiv.org/abs/)
+[![arxiv paper](https://img.shields.io/badge/arxiv-paper-orange)](https://arxiv.org/abs/2509.25134)
 <a href='https://cyberagentailab.github.io/LayerD/'><img src='https://img.shields.io/badge/Project-Page-Green'></a>
 
 </div>
