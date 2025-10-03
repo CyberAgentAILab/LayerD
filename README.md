@@ -65,6 +65,9 @@ The output `layers` is a list of PIL Image objects in RGBA format.
 We provide some test images in the `data/` directory.
 
 > [!NOTE]
+> We recommend PNG images as input to avoid compression artifacts (especially around text edges) that may degrade the inpainting quality. You may mitigate the issue by setting a higher `kernel_scale` (default: 0.015) value when initializing `LayerD`.
+
+> [!NOTE]
 > Building `LayerD` involves downloading two pre-trained models: the top-layer matting module from the Hugging Face repository [cyberagent/layerd-birefnet](https://huggingface.co/cyberagent/layerd-birefnet) (~1GB) and the inpainting model from [eneshahin/simple-lama-inpainting](https://github.com/enesmsahin/simple-lama-inpainting) (~200MB). Please ensure you have a stable internet connection during the first run.
 
 ## Inference

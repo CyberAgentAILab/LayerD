@@ -18,6 +18,7 @@ class LayerD:
         fg_refine: bool = False,
         fg_refine_num_colors: int = 2,
         bg_refine_num_colors: int = 10,
+        kernel_scale: float = 0.015,
         device: str = "cpu",
     ) -> None:
         """Initialize LayerD model for image decomposition.
@@ -31,6 +32,7 @@ class LayerD:
             fg_refine: Whether to refine foreground alpha and colors using flat color regions.
             fg_refine_num_colors: Number of colors for foreground refinement.
             bg_refine_num_colors: Number of colors for background refinement.
+            kernel_scale: Scale factor to determine kernel size for mask expansion based on image dimensions.
             device: Device to run models on ("cpu" or "cuda").
         """
 
@@ -48,15 +50,20 @@ class LayerD:
         # Parameters for refinement
         self.fg_refine_num_colors = fg_refine_num_colors
         self.bg_refine_num_colors = bg_refine_num_colors
-        self._kernel_size = 7  # for mask expansion/shrinkage
+        self._kernel_scale = kernel_scale
         self._th_alpha = 0.005  # threshold for hard alpha mask
         self._unblend_alpha_clip = [0, 0.95]  # clipping range for unblending
         self._palette_percentile = 0.99  # percentile for palette color selection in both fg and bg refinement
         self._bg_refine_n_outer_ratio = 0.2  # ratio for outer region to determine bg flatness
         self.to(device)
 
+    def _calc_kernel_size(self, image: Image.Image) -> tuple[int, int]:
+        kernel_size = (round(image.height * self._kernel_scale), round(image.width * self._kernel_scale))
+        return kernel_size
+
     def _decompose_step(self, image: Image.Image) -> tuple[Image.Image, Image.Image]:
         image_rgb = np.array(image.convert("RGB"))
+        kernel_size = self._calc_kernel_size(image)
 
         alpha = self.matting_model(image)
         hard_mask = alpha > self._th_alpha
@@ -67,9 +74,9 @@ class LayerD:
             )
             # shrinked_hard_mask = shrink_mask(hard_mask, self.kernel_size)
             shrinked_hard_mask = hard_mask
-            inpaint_mask = expand_mask(np.any([shrinked_hard_mask] + color_masks, axis=0), self._kernel_size)
+            inpaint_mask = expand_mask(np.any([shrinked_hard_mask] + color_masks, axis=0), kernel_size)
         else:
-            inpaint_mask = expand_mask(hard_mask, kernel_size=self._kernel_size)
+            inpaint_mask = expand_mask(hard_mask, kernel_size=kernel_size)
 
         bg = self.inpaint_model(image_rgb, inpaint_mask)
 
@@ -85,7 +92,7 @@ class LayerD:
 
         if self.fg_refine:
             for color, color_mask in zip(colors, color_masks):
-                _refined_alpha = estimate_fg_alpha(expand_mask(color_mask, self._kernel_size), color, bg, image_rgb)
+                _refined_alpha = estimate_fg_alpha(expand_mask(color_mask, kernel_size), color, bg, image_rgb)
                 if _refined_alpha is not None:
                     target_mask = np.logical_and(np.logical_not(shrinked_hard_mask), _refined_alpha > 0)
                     alpha[target_mask] = _refined_alpha[target_mask]
