@@ -21,6 +21,7 @@ def infer_dataset(args: argparse.Namespace) -> None:
         matting_hf_card=args.matting_hf_card,
         matting_process_size=tuple(args.matting_process_size) if args.matting_process_size else None,
         matting_weight_path=args.matting_weight_path,
+        kernel_scale=args.kernel_scale,
     )
     layerd.to(args.device)
 
@@ -86,6 +87,7 @@ if __name__ == "__main__":
     )
     # Inference
     parser.add_argument("--max-iterations", type=int, default=3, help="Maximum iterations for layer decomposition")
+    parser.add_argument("--kernel-scale", type=float, default=0.015, help="Kernel scale for mask expansion/shrinkage")
     # Others
     parser.add_argument("--device", type=str, default="cpu", help="Device to run the models on")
     parser.add_argument(
