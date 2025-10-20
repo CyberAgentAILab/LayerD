@@ -28,6 +28,10 @@ ICCV 2025
 
 This repository is the official implementation of the paper "LayerD: Decomposing Raster Graphic Designs into Layers".
 
+## Coming soon
+
+- High-resolution model release
+
 ## Setup
 
 ### Environment
