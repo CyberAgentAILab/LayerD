@@ -60,7 +60,7 @@ You can decompose an image into layers using the following minimal example:
 from PIL import Image
 from layerd import LayerD
 
-image = Image.open("./data/test_image_1.png")
+image = Image.open("./data/test_image_2.png")
 layerd = LayerD(matting_hf_card="cyberagent/layerd-birefnet").to("cpu")
 layers = layerd.decompose(image)
 ```
