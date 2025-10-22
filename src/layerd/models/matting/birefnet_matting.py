@@ -40,8 +40,8 @@ class BiRefNetMatting(BaseMatting):
                 self.process_image_size = (default_size, default_size)
                 logger.info(f"Using model's trained size: {self.process_image_size}, as no size was specified")
             else:
-                self.process_image_size = (512, 512)
-                logger.warning("Could not get model's trained size, using default: (512, 512)")
+                self.process_image_size = (1024, 1024)
+                logger.warning("Could not get model's trained size, using default: (1024, 1024)")
         else:
             self.process_image_size = process_image_size
             # Warn if different from model's trained size
