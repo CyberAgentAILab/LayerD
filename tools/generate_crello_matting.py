@@ -89,7 +89,7 @@ if __name__ == "__main__":
     parser.add_argument("--hf_cache_dir", type=str, default=None, help="Huggingface cache dir")
     parser.add_argument("--output-dir", type=str, required=True, help="Output directory to save results")
     parser.add_argument("--splits", type=str, nargs="+", default=["train", "validation", "test"], help="Dataset splits")
-    parser.add_argument("--short-side-size", type=int, default=512, help="Short side size for rendering")
+    parser.add_argument("--short-side-size", type=int, default=1024, help="Short side size for rendering")
     parser.add_argument("--exclude-text", action="store_true", help="Exclude text layers")
     parser.add_argument("--inpainting", action="store_true", help="Use inpainting to fill occluded regions")
     parser.add_argument("--save-layers", action="store_true", help="Save filtered layers and composite images")

@@ -9,7 +9,7 @@ finetune_last_epochs: -20
 is_matting: false
 valid_step: 1
 resume: false
-image_size: 512 # int for square, or [width, height] for rectangle
+image_size: 1024 # int for square, or [width, height] for rectangle
 seed: 7
 use_accelerate: false
 mixed_precision: no # only works when use_accelerate is true ('no', 'fp16', 'bf16')

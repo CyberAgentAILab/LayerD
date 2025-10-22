@@ -28,9 +28,9 @@ ICCV 2025
 
 This repository is the official implementation of the paper "LayerD: Decomposing Raster Graphic Designs into Layers".
 
-## Coming soon
+## Recent updates
 
-- High-resolution model release
+- Release weight for high-resolution inference and set it as default (2025-10-22)
 
 ## Setup
 
