@@ -4,7 +4,14 @@ from PIL import Image
 from layerd.models.inpaint import build_inpaint
 from layerd.models.matting import build_matting
 
-from .helpers import estimate_fg_alpha, estimate_fg_color, expand_mask, find_flat_color_region_ccs, refine_background
+from .helpers import (
+    estimate_fg_alpha,
+    estimate_fg_color,
+    expand_mask,
+    find_flat_color_region_ccs,
+    refine_background,
+    shrink_mask_ratio,
+)
 
 
 class LayerD:
@@ -15,7 +22,7 @@ class LayerD:
         matting_weight_path: str | None = None,
         use_unblend: bool = True,
         bg_refine: bool = True,
-        fg_refine: bool = False,
+        fg_refine: bool = True,
         fg_refine_num_colors: int = 2,
         bg_refine_num_colors: int = 10,
         kernel_scale: float = 0.015,
@@ -55,26 +62,34 @@ class LayerD:
         self._unblend_alpha_clip = [0, 0.95]  # clipping range for unblending
         self._palette_percentile = 0.99  # percentile for palette color selection in both fg and bg refinement
         self._bg_refine_n_outer_ratio = 0.2  # ratio for outer region to determine bg flatness
+        self._fg_refine_n_inner_ratio = 0.1  # ratio for inner region to be refined
         self.to(device)
 
     def _calc_kernel_size(self, image: Image.Image) -> tuple[int, int]:
         kernel_size = (round(image.height * self._kernel_scale), round(image.width * self._kernel_scale))
         return kernel_size
 
-    def _decompose_step(self, image: Image.Image) -> tuple[Image.Image, Image.Image]:
+    def _decompose_step(self, image: Image.Image) -> tuple[Image.Image | None, Image.Image]:
         image_rgb = np.array(image.convert("RGB"))
         kernel_size = self._calc_kernel_size(image)
 
         alpha = self.matting_model(image)
         hard_mask = alpha > self._th_alpha
+        if hard_mask.sum() == 0:  # No content
+            return None, image
+        if np.mean(hard_mask) > 0.99:  # Full content
+            return None, image
 
         if self.fg_refine:
-            color_masks, colors = find_flat_color_region_ccs(
+            color_masks, colors, ccs = find_flat_color_region_ccs(
                 image_rgb, hard_mask, max_num_colors=self.fg_refine_num_colors, percentile=self._palette_percentile
             )
-            # shrinked_hard_mask = shrink_mask(hard_mask, self.kernel_size)
-            shrinked_hard_mask = hard_mask
-            inpaint_mask = expand_mask(np.any([shrinked_hard_mask] + color_masks, axis=0), kernel_size)
+            # Shrink connected components to be refined
+            shrinked_ccs = [
+                ccs[i] if len(colors[i]) == 0 else shrink_mask_ratio(ccs[i], self._fg_refine_n_inner_ratio)
+                for i in range(len(ccs))
+            ]
+            inpaint_mask = expand_mask(np.any(shrinked_ccs + sum(color_masks, []), axis=0), kernel_size)
         else:
             inpaint_mask = expand_mask(hard_mask, kernel_size=kernel_size)
 
@@ -91,12 +106,23 @@ class LayerD:
             fg_rgb = image_rgb.copy()
 
         if self.fg_refine:
-            for color, color_mask in zip(colors, color_masks):
-                _refined_alpha = estimate_fg_alpha(expand_mask(color_mask, kernel_size), color, bg, image_rgb)
-                if _refined_alpha is not None:
-                    target_mask = np.logical_and(np.logical_not(shrinked_hard_mask), _refined_alpha > 0)
-                    alpha[target_mask] = _refined_alpha[target_mask]
-                    fg_rgb[target_mask] = color
+            for colors_cc, color_masks_cc, cc in zip(colors, color_masks, ccs):
+                _refined_alpha = np.zeros_like(alpha)
+                _refined_color = np.zeros_like(fg_rgb)
+                _nonzero_mask_counts = np.zeros_like(alpha)
+                for color, color_mask in zip(colors_cc, color_masks_cc):
+                    color_mask_expanded = expand_mask(color_mask, kernel_size)
+                    _refined_alpha_color = estimate_fg_alpha(color_mask_expanded, color, bg, image_rgb)
+                    if _refined_alpha_color is not None:
+                        _refined_alpha = np.maximum(_refined_alpha, _refined_alpha_color)
+                        _refined_color[_refined_alpha_color > 0] = color
+                        _nonzero_mask_counts += (_refined_alpha_color > 0).astype(int)
+                color_boundary_mask = _nonzero_mask_counts > 1
+                if _refined_alpha.sum() > 0:
+                    inner_cc = (~shrink_mask_ratio(cc, self._fg_refine_n_inner_ratio)) & cc
+                    target_mask = ((alpha == 0) | inner_cc) & (~color_boundary_mask)
+                    alpha[target_mask] = np.maximum(alpha[target_mask], _refined_alpha[target_mask])
+                    fg_rgb[target_mask & (_refined_alpha > 0)] = _refined_color[target_mask & (_refined_alpha > 0)]
 
         background = Image.fromarray(bg)
         foreground = Image.fromarray(np.dstack([fg_rgb, np.array(alpha * 255, dtype=np.uint8)])).convert("RGBA")
@@ -118,9 +144,7 @@ class LayerD:
 
         for _ in range(max_iterations):
             fg, new_bg = self._decompose_step(current_bg)
-
-            alpha_channel = np.array(fg.split()[-1])
-            if alpha_channel.max() < 1:  # No content
+            if fg is None:
                 break
 
             bg_list.append(new_bg)
