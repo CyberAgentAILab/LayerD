@@ -64,3 +64,9 @@ dev = [
     "mypy>=1.5.1",
     "types-PyYAML>=6.0.0",
 ]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore::FutureWarning:timm.models.layers",
+    "ignore::FutureWarning:timm.models.registry",
+]
