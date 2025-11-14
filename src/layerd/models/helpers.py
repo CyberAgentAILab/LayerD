@@ -40,6 +40,18 @@ def shrink_mask(mask: np.ndarray, kernel_size: tuple[int, int] | int = (5, 5)) -
     return mask > 0 if is_bool else mask
 
 
+def expand_mask_ratio(mask: np.ndarray, ratio: float, min_kernel_size: int = 0) -> np.ndarray:
+    """Expand mask using dilation with kernel size based on mask area and ratio."""
+    kernel_size = max(int(np.sqrt(mask.sum()) * ratio), min_kernel_size)
+    return expand_mask(mask, kernel_size)
+
+
+def shrink_mask_ratio(mask: np.ndarray, ratio: float, min_kernel_size: int = 0) -> np.ndarray:
+    """Shrink mask using erosion with kernel size based on mask area and ratio."""
+    kernel_size = max(int(np.sqrt(mask.sum()) * ratio), min_kernel_size)
+    return shrink_mask(mask, kernel_size)
+
+
 def divide_mask_to_connected_components(mask: np.ndarray) -> list[np.ndarray]:
     """Divide binary mask into connected components."""
     assert mask.dtype == bool, f"Expected bool mask, got {mask.dtype}"
@@ -77,7 +89,7 @@ def find_flat_color_region_ccs(
     th_overlap_ratio: float = 0.5,
     th_flat_area_ratio: float = 0.2,
     th_color_match_ratio: float = 0.85,
-) -> tuple[list[np.ndarray], list[np.ndarray]]:
+) -> tuple[list[list[np.ndarray]], list[list[np.ndarray]], list[np.ndarray]]:
     """Divide mask into connected components and find flat color regions in each component."""
 
     ccs = divide_mask_to_connected_components(mask)
@@ -93,9 +105,9 @@ def find_flat_color_region_ccs(
             th_flat_area_ratio=th_flat_area_ratio,
             th_color_match_ratio=th_color_match_ratio,
         )
-        color_masks.extend(_color_masks)
-        palette.extend(_palette)
-    return color_masks, palette
+        color_masks.append(_color_masks)
+        palette.append(_palette)
+    return color_masks, palette, ccs
 
 
 def find_flat_color_region(
@@ -209,8 +221,7 @@ def refine_background(
 
     mask_ccs = divide_mask_to_connected_components(mask)
     for mask_cc in mask_ccs:
-        n_outer = max(int(np.sqrt(mask_cc.sum()) * n_outer_ratio), 5)
-        outer_mask = expand_mask(mask_cc, n_outer) & (~mask_cc)
+        outer_mask = expand_mask_ratio(mask_cc, n_outer_ratio, 5) & (~mask_cc)
         if outer_mask.sum() == 0:
             continue
         _, palette = find_flat_color_region(
