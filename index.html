@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta
       name="description"
-      content="LayerD: Decomposing Raster Graphic Designs into Layers"
+      content="LayerD: Layer decomposition method for raster graphic designs. Extracts editable layers from composite images. ICCV 2025."
     />
+    <link rel="canonical" href="https://cyberagentailab.github.io/LayerD/" />
     <meta name="keywords" content="Layer Decomposition, Raster Graphics, Computer Vision" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>LayerD: Decomposing Raster Graphic Designs into Layers (ICCV 2025)</title>
@@ -25,6 +26,28 @@
     <meta name="twitter:title" content="LayerD: Decomposing Raster Graphic Designs into Layers (ICCV 2025)" />
     <meta name="twitter:description" content="LayerD decomposes raster graphic design images into layers, where each design contains various elements such as typographic entities, embellishments, vector shapes, or even image materials." />
     <meta name="twitter:image" content="https://cyberagentailab.github.io/LayerD/static/teaser.png" />
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ScholarlyArticle",
+      "name": "LayerD: Decomposing Raster Graphic Designs into Layers",
+      "headline": "LayerD: Layer Decomposition for Raster Graphic Designs",
+      "description": "A method for layer decomposition of raster graphic designs into editable layers",
+      "author": [
+        {"@type": "Person", "name": "Tomoyuki Suzuki", "affiliation": {"@type": "Organization", "name": "CyberAgent"}},
+        {"@type": "Person", "name": "Kang-Jun Liu", "affiliation": {"@type": "Organization", "name": "Tohoku University"}},
+        {"@type": "Person", "name": "Naoto Inoue", "affiliation": {"@type": "Organization", "name": "CyberAgent"}},
+        {"@type": "Person", "name": "Kota Yamaguchi", "affiliation": {"@type": "Organization", "name": "CyberAgent"}}
+      ],
+      "publisher": {"@type": "Organization", "name": "CyberAgent"},
+      "keywords": ["layer decomposition", "graphic design", "image editing", "computer vision"],
+      "datePublished": "2025",
+      "image": "https://cyberagentailab.github.io/LayerD/static/teaser.png",
+      "url": "https://cyberagentailab.github.io/LayerD/"
+    }
+    </script>
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-G4SNWVXVW3"></script>
@@ -180,7 +203,7 @@
     <section class="hero teaser">
       <div class="container is-max-desktop">
         <div class="hero-body">
-          <img src="./static/teaser.png" height="100%" />
+          <img src="./static/teaser.png" height="100%" alt="LayerD layer decomposition example showing raster graphic design decomposed into individual layers" />
         </div>
         <h2 class="subtitle has-text-justified">
           LayerD decomposes raster graphic design images into layers, where each design contains various elements such as typographic entities, embellishments, vector shapes, or even image materials.
@@ -226,71 +249,85 @@
             src="./static/samples/test_001532_5bf8264d8caf671e1c175e19.png"
             height="100%"
             style="margin-bottom: 15px;"
+            alt="Layer decomposition result by LayerD"
           />
           <img
             src="./static/samples/test_000123_5d960598abc8ea6d1c34cc4a.png"
             height="100%"
             style="margin-bottom: 15px;"
+            alt="Layer decomposition result by LayerD"
           />
           <img
             src="./static/samples/test_000064_5cd69ab27d4459dfe14320d8.png"
             height="100%"
             style="margin-bottom: 15px;"
+            alt="Layer decomposition result by LayerD"
           />
           <img
             src="./static/samples/test_000289_5dbbf802abc8ea6d1c0afb92.png"
             height="100%"
             style="margin-bottom: 15px;"
+            alt="Layer decomposition result by LayerD"
           />
           <img
             src="./static/samples/test_000261_5915821995a7a863ddcd8015.png"
             height="100%"
             style="margin-bottom: 15px;"
+            alt="Layer decomposition result by LayerD"
           />
           <img
             src="./static/samples/test_000707_5f5b5a3da637ee11e3e5adbf.png"
             height="100%"
             style="margin-bottom: 15px;"
+            alt="Layer decomposition result by LayerD"
           />
           <img
             src="./static/samples/test_000735_5c94fb2a85ea3c16f9cddf6c.png"
             height="100%"
             style="margin-bottom: 15px;"
+            alt="Layer decomposition result by LayerD"
           />
           <img
             src="./static/samples/test_001546_5b9a51ce18654940f74bf296.png"
             height="100%"
             style="margin-bottom: 15px;"
+            alt="Layer decomposition result by LayerD"
           />
           <img
             src="./static/samples/test_000458_58aeb41795a7a863ddcc846d.png"
             height="100%"
             style="margin-bottom: 15px;"
+            alt="Layer decomposition result by LayerD"
           />
           <img
             src="./static/samples/test_000330_5952784b95a7a863ddcdf2b1.png"
             height="100%"
             style="margin-bottom: 15px;"
+            alt="Layer decomposition result by LayerD"
           />
           <img
             src="./static/samples/test_000911_5ea2d990499b85dcc7aaeb92.png"
             height="100%"
             style="margin-bottom: 15px;"
+            alt="Layer decomposition result by LayerD"
           />
           <img
             src="./static/samples/test_001846_5fb66d81a637ee11e331eff7.png"
             height="100%"
             style="margin-bottom: 15px;"
+            alt="Layer decomposition result by LayerD"
           />
           <img
             src="./static/samples/test_000413_5c459ce5048d064dbca8bc68.png"
             height="100%"
             style="margin-bottom: 15px;"
+            alt="Layer decomposition result by LayerD"
           />
           <img
             src="./static/samples/test_001168_5e04c0ee9fea0cc374a3e279.png"
             height="100%"
             style="margin-bottom: 15px;"
+            alt="Layer decomposition result by LayerD"
           />
         </div>
       </div>
@@ -305,7 +342,7 @@
           LayerD also includes layer refinement processes for each step, which leverage the flat color assumption of layers in graphic designs.
         </p>
         <div class="column is-centered">
-          <img src="./static/method.png" height="100%" />
+          <img src="./static/method.png" height="100%" alt="LayerD method overview for layer decomposition" />
         </div>
       </div>
     </section>
