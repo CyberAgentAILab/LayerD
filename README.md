@@ -24,9 +24,11 @@ ICCV 2025
 
 </div>
 
-![teaser](static/teaser.png)
+![LayerD layer decomposition example](static/teaser.png)
 
 This repository is the official implementation of the paper "LayerD: Decomposing Raster Graphic Designs into Layers".
+LayerD is a layer decomposition method that extracts editable layers from raster graphic design images.
+See also our [project page](https://cyberagentailab.github.io/LayerD/).
 
 ## Recent updates
 
