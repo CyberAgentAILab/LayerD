@@ -137,6 +137,26 @@ uv run ruff format src/
 
 ### Inference
 
+#### CLI (Single File)
+
+```bash
+# Basic single file inference
+uv run layerd --input <path/to/image.png> --output-dir <output/path>
+
+# With custom device and iterations
+uv run layerd --input image.png --output-dir outputs/ --device cuda --max-iterations 5
+
+# With custom matting model size
+uv run layerd --input image.png --output-dir outputs/ --matting-process-size 512 512
+
+# With debug logging
+uv run layerd --input image.png --output-dir outputs/ --log-level DEBUG
+```
+
+#### Batch Inference Script
+
+For batch processing, directories, or glob patterns, use the inference script:
+
 ```bash
 # Basic inference
 uv run python ./tools/infer.py \
