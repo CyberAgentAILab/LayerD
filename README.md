@@ -112,7 +112,34 @@ We provide some test images in the `data/` directory.
 
 ## Inference
 
-We provide a script to run inference on a dataset.
+### CLI (Command-Line Interface)
+
+For single-file inference, you can use the built-in CLI:
+
+```bash
+# Basic usage
+layerd --input <path/to/image.png> --output-dir <output/path>
+
+# With custom device and iterations
+layerd --input image.png --output-dir outputs/ --device cuda --max-iterations 5
+
+# With custom matting model size
+layerd --input image.png --output-dir outputs/ --matting-process-size 512 512
+```
+
+The CLI supports the following options:
+
+- `--input`: Path to input image file (required)
+- `--output-dir`: Output directory to save results (required)
+- `--device`: Device to run models on (`cpu` or `cuda`, default: `cpu`)
+- `--max-iterations`: Maximum decomposition iterations (default: `3`)
+- `--matting-hf-card`: HuggingFace model card (default: `cyberagent/layerd-birefnet`)
+- `--matting-process-size`: Process size as width and height (e.g., `512 512`)
+- `--log-level`: Logging level (default: `INFO`)
+
+### Batch Inference Script
+
+For batch processing with advanced options (directories, glob patterns, multiple files), use the inference script:
 
 ```bash
 uv run python ./tools/infer.py \

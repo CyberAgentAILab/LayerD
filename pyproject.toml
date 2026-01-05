@@ -22,6 +22,9 @@ dependencies = [
     "pillow>=9.5.0",
 ]
 
+[project.scripts]
+layerd = "layerd.cli:main"
+
 [project.optional-dependencies]
 # Dataset generation dependencies (tools/generate_crello_matting.py)
 dataset = [
