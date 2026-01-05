@@ -1,0 +1,34 @@
+#!/bin/bash
+# .git/hooks/post-merge
+# Automatically sync vendored dependencies after git merge/pull
+
+set -e
+
+echo "Checking if vendored dependencies changed..."
+
+# Check if vendor/ directory changed in this merge
+if git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD | grep -q "^vendor/"; then
+    echo "Vendored dependencies changed. Syncing to src/layerd/_vendor/..."
+
+    # Sync simple-lama-inpainting
+    if [ -d "vendor/simple-lama-inpainting/simple_lama_inpainting" ]; then
+        echo "  - Syncing simple-lama-inpainting..."
+        rm -rf src/layerd/_vendor/simple_lama_inpainting
+        cp -r vendor/simple-lama-inpainting/simple_lama_inpainting/ \
+            src/layerd/_vendor/simple_lama_inpainting/
+    fi
+
+    # Sync cr-renderer
+    if [ -d "vendor/cr-renderer/src/cr_renderer" ]; then
+        echo "  - Syncing cr-renderer..."
+        rm -rf src/layerd/_vendor/cr_renderer
+        cp -r vendor/cr-renderer/src/cr_renderer/ \
+            src/layerd/_vendor/cr_renderer/
+    fi
+
+    echo "✓ Vendored dependencies synced successfully"
+    echo "⚠️  Don't forget to stage and commit the changes in src/layerd/_vendor/"
+    echo "    Run: git add src/layerd/_vendor/ && git commit -m 'sync: update vendored dependencies'"
+else
+    echo "No changes to vendored dependencies"
+fi

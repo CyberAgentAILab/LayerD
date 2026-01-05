@@ -11,38 +11,81 @@ LayerD is a layer decomposition method that extracts editable layers from raster
 
 The main `LayerD` class orchestrates this pipeline iteratively to decompose an image into multiple layers (background + foreground layers).
 
-## Vendored Dependencies
+## Bundled Dependencies
 
-LayerD vendors two unmaintained dependencies as UV workspace packages to enable numpy 2.0 compatibility:
+LayerD bundles two dependencies under `layerd._vendor` to enable numpy 2.0 compatibility:
 
-1. **simple-lama-inpainting** (`vendor/simple-lama-inpainting/`)
+1. **simple-lama-inpainting** (`layerd._vendor.simple_lama_inpainting`)
    - Original: <https://github.com/enesmsahin/simple-lama-inpainting>
+   - PyPI: <https://pypi.org/project/simple-lama-inpainting/> (outdated, numpy 1.x)
    - Purpose: LaMa inpainting model wrapper
    - License: Apache-2.0
+   - Reason: PyPI version uses numpy 1.x (incompatible with LayerD's numpy 2.0 requirement)
 
-2. **cr-renderer** (`vendor/cr-renderer/`)
+2. **cr-renderer** (`layerd._vendor.cr_renderer`)
    - Original: <https://github.com/CyberAgentAILab/cr-renderer>
    - Revision: a17e1fb
    - Purpose: Crello dataset rendering
    - License: Apache-2.0
+   - Reason: Not available on PyPI, patched for numpy 2.0 compatibility
 
-These packages are vendored using git subtrees, allowing local modifications for compatibility while maintaining the ability to sync with upstream.
+These packages are bundled into the LayerD distribution under the `layerd._vendor` namespace (private/internal). The `_vendor` prefix indicates these are internal dependencies and should not be imported directly by users.
 
-### Updating Vendored Packages
+**Dual Directory Structure:**
+- `vendor/` = Source of truth for git subtree operations (tracked in git)
+- `src/layerd/_vendor/` = Bundled copy for distribution (tracked in git)
+- Both directories are committed to git to ensure `pip install git+...` and editable installs work correctly
 
-To pull updates from upstream:
+### Syncing Vendored Dependencies
+
+When updating vendored dependencies from upstream:
+
+1. Pull updates to `vendor/` using git subtree:
+   ```bash
+   git subtree pull --prefix vendor/simple-lama-inpainting \
+     https://github.com/enesmsahin/simple-lama-inpainting.git main --squash
+   ```
+
+2. Sync changes to bundled copy (automated or manual):
+
+   **Option A: Automatic (if git hook installed)**
+   - The post-merge hook will automatically sync changes
+   - Review the changes and stage them
+
+   **Option B: Manual sync**
+   ```bash
+   # Use the sync script
+   ./tools/sync-vendor.sh
+
+   # Or manually:
+   rm -rf src/layerd/_vendor/simple_lama_inpainting
+   cp -r vendor/simple-lama-inpainting/simple_lama_inpainting/ \
+     src/layerd/_vendor/simple_lama_inpainting/
+   ```
+
+3. Test the changes:
+   ```bash
+   uv run pytest
+   uv run mypy src/
+   ```
+
+4. Commit both directories together:
+   ```bash
+   git add vendor/ src/layerd/_vendor/
+   git commit -m "chore: update vendored dependencies from upstream"
+   ```
+
+### Git Hook Setup (Optional but Recommended)
+
+To automatically sync `vendor/` → `_vendor` after git operations:
 
 ```bash
-# Update simple-lama-inpainting
-git subtree pull --prefix vendor/simple-lama-inpainting \
-  https://github.com/enesmsahin/simple-lama-inpainting.git main --squash
-
-# Update cr-renderer
-git subtree pull --prefix vendor/cr-renderer \
-  https://github.com/CyberAgentAILab/cr-renderer.git <revision> --squash
+# Copy the post-merge hook
+cp tools/post-merge.sample .git/hooks/post-merge
+chmod +x .git/hooks/post-merge
 ```
 
-**Note**: After updating, verify numpy 2.0 compatibility and re-run tests.
+Note: Both `vendor/` and `src/layerd/_vendor/` are tracked in git to ensure `pip install git+...` and editable installs work correctly.
 
 ## Development Commands
 
