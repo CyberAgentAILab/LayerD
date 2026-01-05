@@ -39,19 +39,10 @@ We welcome contributions in many forms:
 4. **Verify installation**:
 
    ```bash
-   # Run tests
-   uv run pytest
-
-   # Run type checking
-   uv run mypy src/ tests/ \
-     vendor/simple-lama-inpainting/simple_lama_inpainting/ \
-     vendor/cr-renderer/src/cr_renderer/
-
-   # Run linting
-   uv run ruff check src/ tests/ vendor/
+   uv run pytest  # Run tests to verify setup
    ```
 
-For detailed development setup, see [docs/development.md](docs/development.md).
+For detailed development environment options and tools, see [docs/development.md](docs/development.md).
 
 ## Development Workflow
 
@@ -88,27 +79,28 @@ For detailed development setup, see [docs/development.md](docs/development.md).
    - Add docstrings to new functions/classes
    - Update CLAUDE.md if changing architecture
 
-4. **Run quality checks**:
+4. **Run quality checks** before committing:
 
    ```bash
-   # Type checking
-   uv run mypy src/ tests/ \
-     vendor/simple-lama-inpainting/simple_lama_inpainting/ \
-     vendor/cr-renderer/src/cr_renderer/
-
-   # Linting
-   uv run ruff check src/ tests/ vendor/
-
-   # Formatting
-   uv run ruff format src/ tests/ vendor/
-
-   # Tests
-   uv run pytest
+   uv run pytest                              # Run tests
+   uv run mypy src/ tests/ vendor/...         # Type checking
+   uv run ruff check src/ tests/ vendor/      # Linting
+   uv run ruff format src/ tests/ vendor/     # Formatting
    ```
+
+   See [docs/development.md#code-quality](docs/development.md#code-quality) for complete commands and options.
 
 ### Committing Changes
 
 We follow conventional commit format:
+
+```bash
+git commit -m "feat: add support for custom matting models"
+git commit -m "fix: resolve CUDA memory leak in training loop"
+git commit -m "docs: improve installation instructions"
+```
+
+**Commit types:**
 
 - `feat:` - New features
 - `fix:` - Bug fixes
@@ -118,72 +110,36 @@ We follow conventional commit format:
 - `chore:` - Maintenance tasks
 - `perf:` - Performance improvements
 
-Example commit messages:
-
-```bash
-git commit -m "feat: add support for custom matting models"
-git commit -m "fix: resolve CUDA memory leak in training loop"
-git commit -m "docs: improve installation instructions"
-```
-
-For larger changes, include a description:
-
-```bash
-git commit -m "feat: add support for custom matting models
-
-- Add model registry pattern
-- Update LayerD class to accept model name
-- Add tests for custom model loading
-- Update documentation"
-```
-
 ## Code Style Guidelines
+
+LayerD follows strict code quality standards:
 
 ### Type Annotations
 
-LayerD uses **strict mypy type checking**. All functions must have complete type annotations:
+All functions must have complete type annotations:
 
 ```python
-# Bad - no type annotations
-def process_image(image):
-    return decompose(image)
-
 # Good - complete type annotations
 def process_image(image: Image.Image) -> list[Image.Image]:
     return decompose(image)
 ```
 
-Type checking rules:
+**Requirements:**
 
-- `disallow_untyped_defs=true`
-- `disallow_incomplete_defs=true`
-- `no_implicit_optional=true`
+- `disallow_untyped_defs=true` - All functions must have type annotations
+- `disallow_incomplete_defs=true` - All parameters and return types must be annotated
+- `no_implicit_optional=true` - Optional types must be explicit
 
 ### Code Formatting
 
-We use **Ruff** for linting and formatting:
-
-```bash
-# Format code
-uv run ruff format src/
-
-# Check for linting issues
-uv run ruff check src/
-
-# Auto-fix linting issues
-uv run ruff check src/ --fix
-```
+We use **Ruff** for linting and formatting. Run `uv run ruff format src/` before committing.
 
 ### Docstrings
 
-Use clear docstrings for public functions and classes:
+Add clear docstrings to public functions and classes:
 
 ```python
-def decompose(
-    self,
-    image: Image.Image,
-    max_iterations: int = 3
-) -> list[Image.Image]:
+def decompose(self, image: Image.Image, max_iterations: int = 3) -> list[Image.Image]:
     """Decompose an image into layers.
 
     Args:
@@ -191,106 +147,43 @@ def decompose(
         max_iterations: Maximum number of decomposition iterations
 
     Returns:
-        List of PIL Images in RGBA format, ordered as
-        [background, topmost_fg, ..., bottommost_fg]
+        List of PIL Images in RGBA format
     """
-    ...
 ```
 
-### Import Organization
-
-Group imports in this order:
-
-1. Standard library
-2. Third-party packages
-3. Local imports
-
-```python
-# Standard library
-from pathlib import Path
-from typing import Optional
-
-# Third-party
-import numpy as np
-from PIL import Image
-
-# Local
-from layerd.models import LayerD
-```
+For complete code style details, see [docs/development.md#code-quality](docs/development.md#code-quality).
 
 ## Testing Guidelines
 
 ### Writing Tests
 
 1. **Test file naming**: `test_*.py` in the `tests/` directory
-
-2. **Test function naming**: Use descriptive names
-
-   ```python
-   # Bad
-   def test_1():
-       ...
-
-   # Good
-   def test_decompose_returns_correct_number_of_layers():
-       ...
-   ```
-
+2. **Test function naming**: Use descriptive names (e.g., `test_decompose_returns_correct_number_of_layers`)
 3. **Use fixtures** for common setup (see `tests/conftest.py`)
-
-4. **Test edge cases**:
-   - Empty inputs
-   - Invalid inputs
-   - Boundary conditions
-   - Error handling
+4. **Test edge cases**: Empty inputs, invalid inputs, boundary conditions, error handling
 
 ### Running Tests
 
 ```bash
-# Run all tests
-uv run pytest
-
-# Run specific test file
-uv run pytest tests/test_basic_decompose.py
-
-# Run specific test
-uv run pytest tests/test_basic_decompose.py::test_decompose
-
-# Run with verbose output
-uv run pytest -v
-
-# Run with coverage
-uv run pytest --cov=layerd
+uv run pytest                              # Run all tests
+uv run pytest tests/test_basic_decompose.py  # Run specific file
+uv run pytest -v                           # Verbose output
 ```
+
+For advanced testing options, see [docs/development.md#testing](docs/development.md#testing).
 
 ## Pull Request Process
 
 ### Before Submitting
 
-1. **Ensure all tests pass**:
+Ensure your changes are ready:
 
-   ```bash
-   uv run pytest
-   ```
-
-2. **Run type checking**:
-
-   ```bash
-   uv run mypy src/ tests/ \
-     vendor/simple-lama-inpainting/simple_lama_inpainting/ \
-     vendor/cr-renderer/src/cr_renderer/
-   ```
-
-3. **Format and lint code**:
-
-   ```bash
-   uv run ruff format src/ tests/ vendor/
-   uv run ruff check src/ tests/ vendor/
-   ```
-
-4. **Update documentation** if needed
-
-5. **Commit your changes** with descriptive messages
+1. ✅ All tests pass (`uv run pytest`)
+2. ✅ Code is formatted (`uv run ruff format src/ tests/ vendor/`)
+3. ✅ No linting errors (`uv run ruff check src/ tests/ vendor/`)
+4. ✅ Type checking passes (see [docs/development.md#type-checking](docs/development.md#type-checking))
+5. ✅ Documentation updated if needed
+6. ✅ Commits follow conventional format
 
 ### Submitting a Pull Request
 
