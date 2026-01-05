@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 from PIL import Image
 from layerd._vendor.simple_lama_inpainting import SimpleLama
 
@@ -10,7 +11,7 @@ class LamaInpaint(BaseInpaint):
 
     def __init__(self, device: str = "cpu") -> None:
         super().__init__()
-        self.model = SimpleLama(device)
+        self.model = SimpleLama(torch.device(device))
 
     def infer(self, image_np: np.ndarray, hard_mask: np.ndarray) -> np.ndarray:
         """Perform inpainting using LaMa model.
@@ -35,6 +36,7 @@ class LamaInpaint(BaseInpaint):
 
     def to(self, device: str) -> "LamaInpaint":
         """Move model to specified device (e.g., 'cpu' or 'cuda')."""
-        self.model.model.to(device)
-        self.model.device = device
+        device_obj = torch.device(device)
+        self.model.model.to(device_obj)
+        self.model.device = device_obj
         return self
