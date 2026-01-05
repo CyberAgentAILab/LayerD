@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 
 
 # Source https://github.com/advimman/lama
-def get_image(image):
+def get_image(image: Image.Image | np.ndarray) -> np.ndarray:
     if isinstance(image, Image.Image):
         img = np.array(image)
     elif isinstance(image, np.ndarray):
@@ -28,13 +28,13 @@ def get_image(image):
     return img
 
 
-def ceil_modulo(x, mod):
+def ceil_modulo(x: int, mod: int) -> int:
     if x % mod == 0:
         return x
     return (x // mod + 1) * mod
 
 
-def scale_image(img, factor, interpolation=cv2.INTER_AREA):
+def scale_image(img: np.ndarray, factor: float, interpolation: int = cv2.INTER_AREA) -> np.ndarray:
     if img.shape[0] == 1:
         img = img[0]
     else:
@@ -49,7 +49,7 @@ def scale_image(img, factor, interpolation=cv2.INTER_AREA):
     return img
 
 
-def pad_img_to_modulo(img, mod):
+def pad_img_to_modulo(img: np.ndarray, mod: int) -> np.ndarray:
     channels, height, width = img.shape
     out_height = ceil_modulo(height, mod)
     out_width = ceil_modulo(width, mod)
@@ -60,20 +60,26 @@ def pad_img_to_modulo(img, mod):
     )
 
 
-def prepare_img_and_mask(image, mask, device, pad_out_to_modulo=8, scale_factor=None):
-    out_image = get_image(image)
-    out_mask = get_image(mask)
+def prepare_img_and_mask(
+    image: Image.Image | np.ndarray,
+    mask: Image.Image | np.ndarray,
+    device: torch.device,
+    pad_out_to_modulo: int = 8,
+    scale_factor: float | None = None,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    out_image_np = get_image(image)
+    out_mask_np = get_image(mask)
 
     if scale_factor is not None:
-        out_image = scale_image(out_image, scale_factor)
-        out_mask = scale_image(out_mask, scale_factor, interpolation=cv2.INTER_NEAREST)
+        out_image_np = scale_image(out_image_np, scale_factor)
+        out_mask_np = scale_image(out_mask_np, scale_factor, interpolation=cv2.INTER_NEAREST)
 
     if pad_out_to_modulo is not None and pad_out_to_modulo > 1:
-        out_image = pad_img_to_modulo(out_image, pad_out_to_modulo)
-        out_mask = pad_img_to_modulo(out_mask, pad_out_to_modulo)
+        out_image_np = pad_img_to_modulo(out_image_np, pad_out_to_modulo)
+        out_mask_np = pad_img_to_modulo(out_mask_np, pad_out_to_modulo)
 
-    out_image = torch.from_numpy(out_image).unsqueeze(0).to(device)
-    out_mask = torch.from_numpy(out_mask).unsqueeze(0).to(device)
+    out_image = torch.from_numpy(out_image_np).unsqueeze(0).to(device)
+    out_mask = torch.from_numpy(out_mask_np).unsqueeze(0).to(device)
 
     out_mask = (out_mask > 0) * 1
 
@@ -81,7 +87,7 @@ def prepare_img_and_mask(image, mask, device, pad_out_to_modulo=8, scale_factor=
 
 
 # Source: https://github.com/Sanster/lama-cleaner/blob/6cfc7c30f1d6428c02e21d153048381923498cac/lama_cleaner/helper.py # noqa
-def get_cache_path_by_url(url):
+def get_cache_path_by_url(url: str) -> str:
     parts = urlparse(url)
     hub_dir = get_dir()
     model_dir = os.path.join(hub_dir, "checkpoints")
@@ -92,7 +98,7 @@ def get_cache_path_by_url(url):
     return cached_file
 
 
-def download_model(url):
+def download_model(url: str) -> str:
     cached_file = get_cache_path_by_url(url)
     if not os.path.exists(cached_file):
         sys.stderr.write('Downloading: "{}" to {}\n'.format(url, cached_file))

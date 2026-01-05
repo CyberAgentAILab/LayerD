@@ -20,7 +20,7 @@ class CrelloV5RendererLayers(CrelloV5Renderer):
         example = _decode_class_label(self.features, example)
         return tuple(is_transparent(img) for img in example["image"])
 
-    def render(
+    def render(  # type: ignore[override]
         self,
         example: dict[str, Any],
         short_side_size: int = 360,
