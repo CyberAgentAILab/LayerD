@@ -7,7 +7,7 @@ version = "0.1.0"
 description = "LayerD: Decomposing Raster Graphic Designs into Layers"
 requires-python = ">=3.10.0"
 dependencies = [
-    "numpy>=1.26",
+    "numpy>=2.0",
     "torch>=2.5.1",
     "torchvision>=0.20.1",
     "opencv-python>=4.5.3",
@@ -28,6 +28,9 @@ dependencies = [
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.uv.workspace]
+members = [".", "vendor/simple-lama-inpainting", "vendor/cr-renderer"]
 
 [tool.mypy]
 ignore_missing_imports = true
@@ -50,10 +53,11 @@ index-strategy = "unsafe-best-match"
 emit-index-url = true
 
 [tool.uv.sources]
-cr-renderer = { git = "https://github.com/CyberAgentAILab/cr-renderer.git", rev = "a17e1fb" }
+cr-renderer = { workspace = true }
+simple-lama-inpainting = { workspace = true }
 
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "ipykernel>=6.29.5",
     "ipython>=8.29.0",

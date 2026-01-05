@@ -213,10 +213,11 @@ This project is licensed under the Apache-2.0 License. See the [LICENSE](LICENSE
 
 ### Third-party libraries
 
-This project makes use of several third-party libraries, each of which has its own license:
+This project uses several third-party libraries. Some are vendored as workspace packages for numpy 2.0 compatibility:
 
-- [BiRefNet](https://github.com/ZhengPeng7/BiRefNet) — [MIT License](https://github.com/ZhengPeng7/BiRefNet/blob/main/LICENSE)
-- [simple-lama-inpainting](https://github.com/enesmsahin/simple-lama-inpainting) — [Apache-2.0 License](https://github.com/enesmsahin/simple-lama-inpainting/blob/main/LICENSE)
+- [BiRefNet](https://github.com/ZhengPeng7/BiRefNet) — [MIT License](https://github.com/ZhengPeng7/BiRefNet/blob/main/LICENSE) (External)
+- [simple-lama-inpainting](https://github.com/enesmsahin/simple-lama-inpainting) — [Apache-2.0 License](https://github.com/enesmsahin/simple-lama-inpainting/blob/main/LICENSE) (Vendored)
+- [cr-renderer](https://github.com/CyberAgentAILab/cr-renderer) — [Apache-2.0 License](https://github.com/CyberAgentAILab/cr-renderer/blob/main/LICENSE) (Vendored)
 
 ## Citation
 

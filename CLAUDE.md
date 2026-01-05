@@ -11,6 +11,39 @@ LayerD is a layer decomposition method that extracts editable layers from raster
 
 The main `LayerD` class orchestrates this pipeline iteratively to decompose an image into multiple layers (background + foreground layers).
 
+## Vendored Dependencies
+
+LayerD vendors two unmaintained dependencies as UV workspace packages to enable numpy 2.0 compatibility:
+
+1. **simple-lama-inpainting** (`vendor/simple-lama-inpainting/`)
+   - Original: <https://github.com/enesmsahin/simple-lama-inpainting>
+   - Purpose: LaMa inpainting model wrapper
+   - License: Apache-2.0
+
+2. **cr-renderer** (`vendor/cr-renderer/`)
+   - Original: <https://github.com/CyberAgentAILab/cr-renderer>
+   - Revision: a17e1fb
+   - Purpose: Crello dataset rendering
+   - License: Apache-2.0
+
+These packages are vendored using git subtrees, allowing local modifications for compatibility while maintaining the ability to sync with upstream.
+
+### Updating Vendored Packages
+
+To pull updates from upstream:
+
+```bash
+# Update simple-lama-inpainting
+git subtree pull --prefix vendor/simple-lama-inpainting \
+  https://github.com/enesmsahin/simple-lama-inpainting.git main --squash
+
+# Update cr-renderer
+git subtree pull --prefix vendor/cr-renderer \
+  https://github.com/CyberAgentAILab/cr-renderer.git <revision> --squash
+```
+
+**Note**: After updating, verify numpy 2.0 compatibility and re-run tests.
+
 ## Development Commands
 
 ### Environment Setup
@@ -20,7 +53,7 @@ The main `LayerD` class orchestrates this pipeline iteratively to decompose an i
 uv sync
 
 # Install with dev dependencies
-uv sync --extra dev
+uv sync --group dev
 ```
 
 ### Testing
