@@ -1,0 +1,25 @@
+[project]
+name = "cr-renderer"
+version = "0.1.0"
+description = "Document renderer for the crello dataset."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "datasets[vision]>=2.14.0",
+    "pydantic>=2.5.2",
+    "skia-python>=120.0b5",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = ["tests"]
+
+[tool.uv]
+dev-dependencies = [
+    "ipykernel>=6.29.5",
+    "pytest>=6.0.0",
+]
