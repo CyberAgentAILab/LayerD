@@ -2,7 +2,7 @@ import os
 import torch
 import numpy as np
 from PIL import Image
-from simple_lama_inpainting.utils.util import prepare_img_and_mask, download_model
+from ..utils.util import prepare_img_and_mask, download_model
 
 LAMA_MODEL_URL = os.environ.get(
     "LAMA_MODEL_URL",

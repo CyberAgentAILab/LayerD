@@ -7,10 +7,10 @@ from typing import Any, Callable, Dict, Optional, Tuple
 import datasets  # type: ignore
 import skia  # type: ignore
 
-import cr_renderer.image_utils as image_utils
-import cr_renderer.text_utils as text_utils
-from cr_renderer.fonts import FontManager
-from cr_renderer.schema import TextElement
+from . import image_utils
+from . import text_utils
+from .fonts import FontManager
+from .schema import TextElement
 
 logger = logging.getLogger(__name__)
 

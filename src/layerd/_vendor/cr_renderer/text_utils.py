@@ -4,9 +4,9 @@ from typing import Any, Iterator, List, Literal, NamedTuple, Optional, Type, Typ
 
 import skia  # type: ignore
 
-from cr_renderer.color_utils import parse_color
-from cr_renderer.fonts import FontManager
-from cr_renderer.schema import (
+from .color_utils import parse_color
+from .fonts import FontManager
+from .schema import (
     CurvedTextEffect,
     DropShadowTextEffect,
     EchoTextEffect,
