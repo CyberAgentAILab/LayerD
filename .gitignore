@@ -157,4 +157,4 @@ dmypy.json
 ignored/
 *.whl
 .pre-commit-config.yaml
-.vscode
+.vscode.claude/
