@@ -1,11 +1,11 @@
 from typing import Any
 
-import cr_renderer.image_utils as image_utils
-import cr_renderer.text_utils as text_utils
+import layerd._vendor.cr_renderer.image_utils as image_utils
+import layerd._vendor.cr_renderer.text_utils as text_utils
 import skia  # type: ignore
-from cr_renderer.fonts import FontManager
-from cr_renderer.renderer import CrelloV5Renderer, _decode_class_label
-from cr_renderer.schema import TextElement
+from layerd._vendor.cr_renderer.fonts import FontManager
+from layerd._vendor.cr_renderer.renderer import CrelloV5Renderer, _decode_class_label
+from layerd._vendor.cr_renderer.schema import TextElement
 from PIL import Image
 
 

@@ -1,0 +1,17 @@
+LayerD - Layer Decomposition for Raster Graphic Designs
+Copyright 2025 Tomoyuki Suzuki
+
+This product includes bundled software:
+
+1. simple-lama-inpainting (Apache License 2.0)
+   Copyright (c) enesmsahin
+   Original: https://github.com/enesmsahin/simple-lama-inpainting
+   PyPI: https://pypi.org/project/simple-lama-inpainting/ (outdated, numpy 1.x)
+   Bundled as: layerd._vendor.simple_lama_inpainting
+   Reason: Patched for numpy 2.0 compatibility
+
+2. cr-renderer (Apache License 2.0)
+   Copyright (c) CyberAgent, Inc.
+   Original: https://github.com/CyberAgentAILab/cr-renderer
+   Bundled as: layerd._vendor.cr_renderer
+   Reason: Not available on PyPI, patched for numpy 2.0 compatibility

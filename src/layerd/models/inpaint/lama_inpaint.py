@@ -1,6 +1,6 @@
 import numpy as np
 from PIL import Image
-from simple_lama_inpainting import SimpleLama
+from layerd._vendor.simple_lama_inpainting import SimpleLama
 
 from layerd.models.inpaint.base import BaseInpaint
 
