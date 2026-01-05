@@ -11,7 +11,7 @@ def main(image_path: str, mask_path: str, out_path: str | None = None):
         img_path (str): Path to input image (RGB)
         mask_path (str): Path to input mask (Binary 1-CH Image.
                         Pixels with value 255 will be inpainted)
-        out_path (str, optional): Optional output imaga path.
+        out_path (str, optional): Optional output image path.
                         If not provided it will be saved to the same
                             path as input image.
                         Defaults to None.

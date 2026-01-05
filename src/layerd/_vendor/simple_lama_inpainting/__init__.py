@@ -7,4 +7,4 @@ This is a bundled dependency for LayerD. Do not import from layerd._vendor direc
 """
 from .models.model import SimpleLama
 
-__all__ = ['SimpleLama',]
+__all__ = ['SimpleLama']

@@ -6,6 +6,8 @@ set -e
 
 echo "Syncing vendored dependencies..."
 
+exit_code=0
+
 # Sync simple-lama-inpainting
 if [ -d "vendor/simple-lama-inpainting/simple_lama_inpainting" ]; then
     echo "  - Syncing simple-lama-inpainting..."
@@ -14,6 +16,7 @@ if [ -d "vendor/simple-lama-inpainting/simple_lama_inpainting" ]; then
         src/layerd/_vendor/simple_lama_inpainting/
 else
     echo "  ⚠️  vendor/simple-lama-inpainting not found"
+    exit_code=1
 fi
 
 # Sync cr-renderer
@@ -24,6 +27,12 @@ if [ -d "vendor/cr-renderer/src/cr_renderer" ]; then
         src/layerd/_vendor/cr_renderer/
 else
     echo "  ⚠️  vendor/cr-renderer not found"
+    exit_code=1
+fi
+
+if [ $exit_code -ne 0 ]; then
+    echo "✗ Sync incomplete - some directories were missing"
+    exit $exit_code
 fi
 
 echo "✓ Sync complete!"
