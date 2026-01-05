@@ -92,11 +92,18 @@ Note: Both `vendor/` and `src/layerd/_vendor/` are tracked in git to ensure `pip
 ### Environment Setup
 
 ```bash
-# Install dependencies (uses uv for package management)
+# Install core dependencies only (no dev tools, no optional dependencies)
 uv sync
 
-# Install with dev dependencies
+# Install with dev tools only (no optional dependencies)
 uv sync --group dev
+
+# Install with all optional dependencies (dataset + train) + dev tools
+uv sync --all-extras --all-groups
+
+# Install with specific optional dependencies + dev tools
+uv sync --extra dataset --group dev
+uv sync --extra train --group dev
 ```
 
 ### Testing

@@ -45,13 +45,47 @@ We have verified reproducibility under the following environment.
 - CUDA 12.8 (optional)
 - [uv](https://docs.astral.sh/uv/) 0.8.17
 
-### Install
+### Installation
 
-LayerD uses [uv](https://docs.astral.sh/uv/) to manage the environment and dependencies.
-You can install this project with the following command:
+#### For inference only (recommended for most users)
 
 ```bash
-uv sync
+pip install git+https://github.com/CyberAgentAILab/LayerD.git
+```
+
+This installs the core package with inference and evaluation capabilities.
+
+#### For dataset generation
+
+If you want to generate training datasets from Crello:
+
+```bash
+pip install "git+https://github.com/CyberAgentAILab/LayerD.git#egg=layerd[dataset]"
+```
+
+#### For training
+
+If you want to train or fine-tune models:
+
+```bash
+pip install "git+https://github.com/CyberAgentAILab/LayerD.git#egg=layerd[train]"
+```
+
+#### For all features
+
+```bash
+pip install "git+https://github.com/CyberAgentAILab/LayerD.git#egg=layerd[all]"
+```
+
+#### For development with uv (recommended for contributors)
+
+LayerD uses [uv](https://docs.astral.sh/uv/) to manage the development environment.
+Clone the repository and install with all dependencies:
+
+```bash
+git clone https://github.com/CyberAgentAILab/LayerD.git
+cd LayerD
+uv sync --all-extras --all-groups
 ```
 
 ## Quick example
