@@ -12,7 +12,7 @@ class MAE:
     def __call__(self, x: np.ndarray, y: np.ndarray) -> float:
         x = x / self.normalize_value
         y = y / self.normalize_value
-        return np.mean(np.abs(x - y))
+        return float(np.mean(np.abs(x - y)))
 
 
 class SSIM:
