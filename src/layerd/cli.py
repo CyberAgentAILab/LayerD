@@ -3,7 +3,6 @@
 import argparse
 import logging
 import os
-from typing import NoReturn
 
 from PIL import Image
 
