@@ -6,7 +6,6 @@ import os.path as osp
 # Check for optional dependencies
 try:
     import datasets
-    import skia  # Imported by cr_renderer
 except ImportError as e:
     print("ERROR: Dataset generation requires additional dependencies.")
     print("Install with: pip install \"git+https://github.com/CyberAgentAILab/LayerD.git#egg=layerd[dataset]\"")

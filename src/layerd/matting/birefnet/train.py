@@ -195,8 +195,14 @@ def train(cfg: Any) -> None:
         try:
             from accelerate import Accelerator
         except ImportError:
-            print("ERROR: Accelerate support requires additional dependencies.")
-            print("Install with: pip install \"git+https://github.com/CyberAgentAILab/LayerD.git#egg=layerd[train]\"")
+            print(
+                "ERROR: Using Hugging Face Accelerate for training (e.g., distributed or mixed-precision training) "
+                "requires additional dependencies."
+            )
+            print(
+                'Install the training extras with: '
+                'pip install "git+https://github.com/CyberAgentAILab/LayerD.git#egg=layerd[train]"'
+            )
             raise SystemExit(1)
 
         accelerator = Accelerator(
