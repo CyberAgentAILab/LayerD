@@ -192,7 +192,18 @@ def train(cfg: Any) -> None:
     accelerator = None
     distributed = cfg.dist
     if cfg.use_accelerate:
-        from accelerate import Accelerator
+        try:
+            from accelerate import Accelerator
+        except ImportError:
+            print(
+                "ERROR: Using Hugging Face Accelerate for training (e.g., distributed or mixed-precision training) "
+                "requires additional dependencies."
+            )
+            print(
+                'Install the training extras with: '
+                'pip install "git+https://github.com/CyberAgentAILab/LayerD.git#egg=layerd[train]"'
+            )
+            raise SystemExit(1)
 
         accelerator = Accelerator(
             mixed_precision=cfg.mixed_precision,

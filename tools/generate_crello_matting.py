@@ -3,7 +3,15 @@ import logging
 import os
 import os.path as osp
 
-import datasets
+# Check for optional dependencies
+try:
+    import datasets
+except ImportError as e:
+    print("ERROR: Dataset generation requires additional dependencies.")
+    print("Install with: pip install \"git+https://github.com/CyberAgentAILab/LayerD.git#egg=layerd[dataset]\"")
+    print(f"Missing module: {e.name}")
+    raise SystemExit(1) from e
+
 import huggingface_hub
 from PIL import Image
 from tqdm import tqdm
