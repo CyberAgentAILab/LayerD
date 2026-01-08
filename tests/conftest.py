@@ -3,16 +3,14 @@ Pytest configuration for LayerD tests.
 
 This file provides command-line options and fixtures for tests.
 """
+
 import pytest
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:
     """Add custom command-line options for pytest."""
     parser.addoption(
-        "--save-images",
-        action="store_true",
-        default=False,
-        help="Save output images during testing (default: False)"
+        "--save-images", action="store_true", default=False, help="Save output images during testing (default: False)"
     )
     parser.addoption(
         "--matting-process-size",
@@ -20,7 +18,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         type=int,
         default=[1024, 1024],
         metavar=("WIDTH", "HEIGHT"),
-        help="Matting process size as width height (default: 1024 1024)"
+        help="Matting process size as width height (default: 1024 1024)",
     )
 
 

@@ -23,9 +23,7 @@ from cr_renderer.schema import (
 logger = logging.getLogger(__name__)
 
 
-def render_text(
-    canvas: skia.Canvas, font_manager: FontManager, element: TextElement
-) -> None:
+def render_text(canvas: skia.Canvas, font_manager: FontManager, element: TextElement) -> None:
     """Render text."""
     check_supported_effects(element)
 
@@ -79,15 +77,11 @@ class TextSpan(NamedTuple):
     style: TextSpanStyle
 
 
-def make_default_map(
-    length: int, value: Optional[Any] = None, type: Optional[str] = None
-) -> List[TextMapItem]:
+def make_default_map(length: int, value: Optional[Any] = None, type: Optional[str] = None) -> List[TextMapItem]:
     return [TextMapItem(startIndex=0, endIndex=length - 1, type=type, value=value)]
 
 
-def make_dense_map(
-    m: Optional[List[TextMapItem]], text_length: int, default: Any = None
-) -> List[Any]:
+def make_dense_map(m: Optional[List[TextMapItem]], text_length: int, default: Any = None) -> List[Any]:
     """Make a dense map from a run-length array."""
     if m is None:
         m = make_default_map(text_length, default)
@@ -134,9 +128,7 @@ def make_text_spans(element: TextProperty) -> Iterator[List[TextSpan]]:
                 print(span.text, span.style)
     """
 
-    def _make_line_spans(
-        text: str, style_map: List[TextSpanStyle]
-    ) -> Iterator[TextSpan]:
+    def _make_line_spans(text: str, style_map: List[TextSpanStyle]) -> Iterator[TextSpan]:
         offset = 0
         for style, it in itertools.groupby(style_map):
             length = len(list(it))
@@ -196,10 +188,7 @@ def make_text_blob(
     font = skia.Font(typeface, int(element.fontSize))
     glyphs = font.textToGlyphs(text)
 
-    positions = [
-        xpos + (element.letterSpacing * index)
-        for index, xpos in enumerate(font.getXPos(glyphs))
-    ]
+    positions = [xpos + (element.letterSpacing * index) for index, xpos in enumerate(font.getXPos(glyphs))]
     builder = skia.TextBlobBuilder()
     builder.allocRunPosH(font, glyphs, positions, 0)
     blob = builder.make()

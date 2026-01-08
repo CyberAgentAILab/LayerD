@@ -16,9 +16,7 @@ def image_paths() -> Tuple[Path, Path, Path]:
 
 
 @pytest.fixture(scope="session")
-def images(
-    image_paths: Tuple[Path, Path, Path]
-) -> Tuple[Image.Image, Image.Image, Image.Image]:
+def images(image_paths: Tuple[Path, Path, Path]) -> Tuple[Image.Image, Image.Image, Image.Image]:
     image = Image.open(image_paths[0])
     mask = Image.open(image_paths[1])
     out = Image.open(image_paths[2])

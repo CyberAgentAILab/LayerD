@@ -8,7 +8,7 @@ try:
     import datasets
 except ImportError as e:
     print("ERROR: Dataset generation requires additional dependencies.")
-    print("Install with: pip install \"git+https://github.com/CyberAgentAILab/LayerD.git#egg=layerd[dataset]\"")
+    print('Install with: pip install "git+https://github.com/CyberAgentAILab/LayerD.git#egg=layerd[dataset]"')
     print(f"Missing module: {e.name}")
     raise SystemExit(1) from e
 

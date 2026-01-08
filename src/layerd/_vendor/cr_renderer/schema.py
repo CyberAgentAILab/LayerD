@@ -153,11 +153,7 @@ class TextProperty(BaseModel):
     @model_validator(mode="after")
     def check_linemap(self) -> "TextProperty":
         if self.lineMap is None:
-            self.lineMap = [
-                TextMapItem(
-                    startIndex=0, endIndex=len(self.text) - 1, value="line", type="line"
-                )
-            ]
+            self.lineMap = [TextMapItem(startIndex=0, endIndex=len(self.text) - 1, value="line", type="line")]
         return self
 
 

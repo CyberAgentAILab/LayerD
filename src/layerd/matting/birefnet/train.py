@@ -200,7 +200,7 @@ def train(cfg: Any) -> None:
                 "requires additional dependencies."
             )
             print(
-                'Install the training extras with: '
+                "Install the training extras with: "
                 'pip install "git+https://github.com/CyberAgentAILab/LayerD.git#egg=layerd[train]"'
             )
             raise SystemExit(1)

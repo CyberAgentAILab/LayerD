@@ -81,9 +81,7 @@ class FontManager(object):
             try:
                 family = self._fonts[normalize_family(family_name)]
                 if i > 0:
-                    logger.warning(
-                        f"Font family fallback to {family[0]['fontFamily']}."
-                    )
+                    logger.warning(f"Font family fallback to {family[0]['fontFamily']}.")
                 break
             except KeyError:
                 logger.warning(f"Font family not found: {font_family}")
@@ -98,8 +96,7 @@ class FontManager(object):
             font = next(
                 font
                 for font in family
-                if font.get("fontWeight", "regular") == font_weight
-                and font.get("fontStyle", "regular") == font_style
+                if font.get("fontWeight", "regular") == font_weight and font.get("fontStyle", "regular") == font_style
             )
         except StopIteration:
             font = family[0]

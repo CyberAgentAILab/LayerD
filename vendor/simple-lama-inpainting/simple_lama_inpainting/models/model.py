@@ -13,17 +13,13 @@ LAMA_MODEL_URL = os.environ.get(
 class SimpleLama:
     def __init__(
         self,
-        device: torch.device = torch.device(
-            "cuda" if torch.cuda.is_available() else "cpu"
-        ),
+        device: torch.device = torch.device("cuda" if torch.cuda.is_available() else "cpu"),
     ) -> None:
         model_path_env = os.environ.get("LAMA_MODEL")
         if model_path_env:
             model_path = model_path_env
             if not os.path.exists(model_path):
-                raise FileNotFoundError(
-                    f"lama torchscript model not found: {model_path}"
-                )
+                raise FileNotFoundError(f"lama torchscript model not found: {model_path}")
         else:
             model_path = download_model(LAMA_MODEL_URL)
 

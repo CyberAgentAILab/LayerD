@@ -52,7 +52,11 @@ def test_decompose(fg_refine: bool, bg_refine: bool, matting_process_size: tuple
     # Save images if requested (following the same pattern as tools/infer.py)
     if save_images:
         # Create output directory with test configuration in the name
-        output_dir = Path(__file__).parent / "output" / f"fg_{fg_refine}_bg_{bg_refine}_size_{matting_process_size[0]}x{matting_process_size[1]}"
+        output_dir = (
+            Path(__file__).parent
+            / "output"
+            / f"fg_{fg_refine}_bg_{bg_refine}_size_{matting_process_size[0]}x{matting_process_size[1]}"
+        )
         output_dir.mkdir(parents=True, exist_ok=True)
 
         # Save each layer with zero-padded index like infer.py

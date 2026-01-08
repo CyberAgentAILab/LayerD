@@ -33,9 +33,7 @@ def decode_skia_image(image_bytes: bytes) -> skia.Image:
         return skia.Image.open(f)
 
 
-def convert_pil_image_to_skia_image(
-    image: PIL.Image.Image, format: str = "PNG"
-) -> skia.Image:
+def convert_pil_image_to_skia_image(image: PIL.Image.Image, format: str = "PNG") -> skia.Image:
     """Convert PIL.Image to skia.Image."""
     image_bytes = encode_pil_image(image, format=format)
     return decode_skia_image(image_bytes)

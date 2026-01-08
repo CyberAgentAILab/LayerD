@@ -53,7 +53,7 @@ class CrelloV5Renderer(_BaseRenderer):
         max_size: int = 360,
         render_text: bool = True,
         format: str = "jpeg",
-        canvas_color: skia.Color4f | None = skia.ColorWHITE
+        canvas_color: skia.Color4f | None = skia.ColorWHITE,
     ) -> bytes:
         """Render a preprocessed example and return as JPEG bytes."""
         example = _decode_class_label(self.features, example)
@@ -82,7 +82,7 @@ class CrelloV4Renderer(_BaseRenderer):
         max_size: int = 360,
         render_text: bool = True,
         format: str = "jpeg",
-        canvas_color: skia.Color4f | None = skia.ColorWHITE
+        canvas_color: skia.Color4f | None = skia.ColorWHITE,
     ) -> bytes:
         """Render a preprocessed example and return as JPEG bytes."""
         example = _decode_class_label(self.features, example)
@@ -93,28 +93,17 @@ class CrelloV4Renderer(_BaseRenderer):
     def convert_to_v5(example: Dict[str, Any]) -> Dict[str, Any]:
         """Convert a Crello v4 example to Crello v5 format."""
         length = int(example["length"])
-        type_name = [
-            example["type"][i][:1].capitalize() + example["type"][i][1:]
-            for i in range(length)
-        ]
+        type_name = [example["type"][i][:1].capitalize() + example["type"][i][1:] for i in range(length)]
         canvas_width = int(example["canvas_width"])
         canvas_height = int(example["canvas_height"])
 
         text = [re.sub("\n+", "\n", x) for x in example["text"]]
 
         text_color = [
-            [
-                "rgba({},{},{},{})".format(
-                    *example["color"][i], float(example["opacity"][i])
-                )
-            ]
-            * len(text[i])
+            ["rgba({},{},{},{})".format(*example["color"][i], float(example["opacity"][i]))] * len(text[i])
             for i in range(length)
         ]
-        text_line = [
-            list(accumulate([int(c == "\n") for c in list(text[i])]))
-            for i in range(length)
-        ]
+        text_line = [list(accumulate([int(c == "\n") for c in list(text[i])])) for i in range(length)]
 
         return {
             "canvas_width": canvas_width,
@@ -166,7 +155,7 @@ def _render_to_surface(
     max_size: int,
     render_text: bool = True,
     format: str = "jpeg",
-    canvas_color: skia.Color4f | None = skia.ColorWHITE
+    canvas_color: skia.Color4f | None = skia.ColorWHITE,
 ) -> bytes:
     """Render an example to a surface and return as JPEG bytes."""
     canvas_width = example["canvas_width"]
@@ -210,9 +199,7 @@ def _render_to_surface(
                     )
                     text_utils.render_text(canvas, font_manager, element)
                 else:
-                    image = image_utils.convert_pil_image_to_skia_image(
-                        example["image"][i]
-                    )
+                    image = image_utils.convert_pil_image_to_skia_image(example["image"][i])
                     src = skia.Rect(image.width(), image.height())
                     dst = skia.Rect(example["width"][i], example["height"][i])
                     paint = skia.Paint(Alphaf=example["opacity"][i], AntiAlias=True)
@@ -232,7 +219,5 @@ def _get_scale_size(
     if round(height * sy) <= 0:
         sy = 1.0 / height
     size = (round(sx * width), round(sy * height))
-    assert (
-        size[0] > 0 and size[1] > 0
-    ), f"Failed to get scale: {size=}, {width=}, {height=}"
+    assert size[0] > 0 and size[1] > 0, f"Failed to get scale: {size=}, {width=}, {height=}"
     return (sx, sy), size
