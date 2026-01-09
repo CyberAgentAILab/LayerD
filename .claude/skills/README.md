@@ -17,6 +17,7 @@ Run code quality checks including type checking, linting, formatting, and tests.
 ```
 
 **What it does:**
+
 - **mypy**: Type checks `src/`, `tests/`, and vendored packages
 - **ruff**: Lints code in `src/`, `tests/`, and `vendor/`
 - **format**: Checks code formatting (no changes made)
@@ -33,6 +34,7 @@ Automatically fix linting issues and format code.
 ```
 
 **What it does:**
+
 - **ruff**: Automatically fixes linting issues where possible
 - **format**: Formats code according to project style
 
@@ -49,6 +51,7 @@ These skills can be invoked directly in the Claude Code chat:
 ## Implementation
 
 Skills are implemented as Bash scripts in this directory. Each skill must:
+
 1. Be executable (`chmod +x`)
 2. Have a `.sh` extension
 3. Handle command-line arguments
