@@ -46,8 +46,8 @@ class BaseInpaint(ABC):
             raise TypeError(f"Hard mask must be np.ndarray, got {type(hard_mask)}")
 
         # Check that mask is boolean dtype
-        if hard_mask.dtype != bool:
-            raise TypeError(f"Hard mask must be boolean dtype (bool), got {hard_mask.dtype}")
+        if hard_mask.dtype != np.bool_:
+            raise TypeError(f"Hard mask must be boolean dtype (np.bool_), got {hard_mask.dtype}")
 
         # Check dimensions match
         img_w, img_h = image.shape[1], image.shape[0]
