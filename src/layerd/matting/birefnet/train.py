@@ -200,7 +200,7 @@ def train(cfg: Any) -> None:
                 "requires additional dependencies."
             )
             print(
-                'Install the training extras with: '
+                "Install the training extras with: "
                 'pip install "git+https://github.com/CyberAgentAILab/LayerD.git#egg=layerd[train]"'
             )
             raise SystemExit(1)
@@ -226,10 +226,15 @@ def train(cfg: Any) -> None:
 
     # Model, Optimizer, Scheduler
     model = build_birefnet(cfg.model.card, **cfg.model.params)
-    if cfg.resume:
-        model.load_state_dict(
-            torch.load(os.path.join(cfg.out_dir, "model_last.pth"), map_location="cpu", weights_only=True)
-        )
+    resume_from = getattr(cfg, "resume_from", None)
+    if cfg.resume or resume_from:
+        ckpt_path = resume_from if resume_from else os.path.join(cfg.out_dir, "model_last.pth")
+        if not osp.exists(ckpt_path):
+            raise FileNotFoundError(
+                f"Checkpoint file not found at '{ckpt_path}'. "
+                "Check the 'resume_from' setting or ensure the default checkpoint exists."
+            )
+        model.load_state_dict(torch.load(ckpt_path, map_location="cpu", weights_only=True))
     if not cfg.use_accelerate:
         if distributed:
             model = model.to(device)

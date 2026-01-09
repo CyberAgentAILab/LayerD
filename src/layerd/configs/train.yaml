@@ -9,7 +9,7 @@ finetune_last_epochs: -20
 is_matting: false
 valid_step: 1
 resume: false
-image_size: 1024 # int for square, or [width, height] for rectangle
+image_size: 1024 # int for square, or [width, height] for rectangle. 1024 matches BiRefNet-L target resolution for better fine-detail quality, but increases memory/compute usage. Can be lowered to 512 for resource-constrained setups.
 seed: 7
 use_accelerate: false
 mixed_precision: no # only works when use_accelerate is true ('no', 'fp16', 'bf16')
