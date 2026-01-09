@@ -226,10 +226,10 @@ def train(cfg: Any) -> None:
 
     # Model, Optimizer, Scheduler
     model = build_birefnet(cfg.model.card, **cfg.model.params)
-    if cfg.resume:
-        model.load_state_dict(
-            torch.load(os.path.join(cfg.out_dir, "model_last.pth"), map_location="cpu", weights_only=True)
-        )
+    resume_from = getattr(cfg, "resume_from", None)
+    if cfg.resume or resume_from:
+        ckpt_path = resume_from if resume_from else os.path.join(cfg.out_dir, "model_last.pth")
+        model.load_state_dict(torch.load(ckpt_path, map_location="cpu", weights_only=True))
     if not cfg.use_accelerate:
         if distributed:
             model = model.to(device)
