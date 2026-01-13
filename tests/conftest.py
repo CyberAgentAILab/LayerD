@@ -16,9 +16,9 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         "--matting-process-size",
         nargs=2,
         type=int,
-        default=[1024, 1024],
+        default=[256, 256],  # Changed from [1024, 1024] for faster CPU tests
         metavar=("WIDTH", "HEIGHT"),
-        help="Matting process size as width height (default: 1024 1024)",
+        help="Matting process size as width height (default: 256 256 for faster CPU tests). Use --matting-process-size 1024 1024 for full resolution.",
     )
 
 
