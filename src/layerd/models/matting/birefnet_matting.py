@@ -23,12 +23,34 @@ class BiRefNetMatting(BaseMatting):
         device: str = "cpu",
         weight_path: str | None = None,
     ) -> None:
+        """Initialize BiRefNet matting model.
+
+        Args:
+            hf_card: HuggingFace model card name (default: cyberagent/layerd-birefnet)
+            process_image_size: Processing resolution as (height, width).
+                If None, uses model's trained size from config.
+            device: Device to run inference on ('cpu' or 'cuda')
+            weight_path: Optional path to custom model weights (.pth file).
+                Supports local paths and remote URLs (gs://, s3://, https://, etc.)
+        """
         super().__init__()
         self.model = build_birefnet(hf_card)
         if weight_path is not None:
-            state_dict = torch.load(weight_path, map_location="cpu", weights_only=True)
+            # Use fsspec for unified I/O (works with local paths and cloud storage)
+            if isinstance(weight_path, str) and "://" in weight_path:
+                # Cloud storage path (gs://, s3://, abfs://, etc.)
+                import fsspec
+
+                logger.info(f"Loading weights from {weight_path} via fsspec")
+                with fsspec.open(weight_path, "rb") as f:
+                    state_dict = torch.load(f, map_location="cpu", weights_only=True)
+            else:
+                # Local file path - use standard torch.load for better performance
+                logger.info(f"Loading weights from local path: {weight_path}")
+                state_dict = torch.load(weight_path, map_location="cpu", weights_only=True)
+
             self.model.load_state_dict(state_dict)
-            logger.info(f"Loaded weights from {weight_path}")
+            logger.info(f"Successfully loaded weights from {weight_path}")
         self.model.to(device)
         self.model.eval()
         self.device = device
