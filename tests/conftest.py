@@ -18,9 +18,14 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         "--matting-process-size",
         nargs=2,
         type=int,
-        default=[1024, 1024],
+        default=[256, 256],
         metavar=("WIDTH", "HEIGHT"),
-        help="Matting process size as width height (default: 1024 1024)"
+        help=(
+            "Matting process size in pixels as WIDTH HEIGHT (default: 256 256). "
+            "Smaller values can speed up CPU tests at the cost of output quality; "
+            "for full-resolution testing, use the dimensions of your input images "
+            "(for example, 3840 2160 for 4K)."
+        )
     )
 
 
