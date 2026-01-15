@@ -2,6 +2,7 @@ import logging
 from typing import cast
 
 import cv2
+import fsspec
 import numpy as np
 import torch
 from PIL import Image
@@ -37,11 +38,11 @@ class BiRefNetMatting(BaseMatting):
         self.model = build_birefnet(hf_card)
         if weight_path is not None:
             # Use fsspec for unified I/O (works with local paths and cloud storage)
-            if isinstance(weight_path, str) and "://" in weight_path:
-                # Cloud storage path (gs://, s3://, abfs://, etc.)
-                import fsspec
-
-                logger.info(f"Loading weights from {weight_path} via fsspec")
+            protocol = fsspec.utils.get_protocol(weight_path)
+            remote_protocols = {"gs", "s3", "abfs", "https", "http"}
+            if protocol in remote_protocols:
+                # Cloud storage or remote URL path
+                logger.info(f"Loading weights from {weight_path} via fsspec (protocol={protocol})")
                 with fsspec.open(weight_path, "rb") as f:
                     state_dict = torch.load(f, map_location="cpu", weights_only=True)
             else:
