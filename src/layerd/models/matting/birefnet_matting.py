@@ -26,7 +26,18 @@ class BiRefNetMatting(BaseMatting):
         super().__init__()
         self.model = build_birefnet(hf_card)
         if weight_path is not None:
-            state_dict = torch.load(weight_path, map_location="cpu", weights_only=True)
+            # Lazy import to avoid circular dependency (LayerD -> layerd_internal -> LayerD)
+            try:
+                from layerd_internal.gcsio import torch_load
+
+                state_dict = torch_load(
+                    weight_path,
+                    map_location="cpu",
+                    weights_only=True,
+                )
+            except ImportError:
+                # Fallback to standard torch.load if layerd_internal not available (OSS usage)
+                state_dict = torch.load(weight_path, map_location="cpu", weights_only=True)
             self.model.load_state_dict(state_dict)
             logger.info(f"Loaded weights from {weight_path}")
         self.model.to(device)
