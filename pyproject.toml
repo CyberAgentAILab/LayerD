@@ -21,8 +21,6 @@ dependencies = [
     "kornia>=0.5.0",           # Required by BiRefNet model
     "pillow>=9.5.0",
     "fsspec>=2021.10.0",       # Filesystem abstraction for cloud storage support
-    "psd-tools>=1.9.0",        # PSD export support
-    "pydantic>=2.5.2",         # Pipeline result models for API compatibility
 ]
 
 [project.scripts]
