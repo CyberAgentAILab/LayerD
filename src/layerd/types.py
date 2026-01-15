@@ -32,7 +32,7 @@ from PIL import Image
 class BoundingBox(TypedDict):
     """Bounding box coordinates.
 
-    Represents a rectangular region with inclusive bounds.
+    Represents a rectangular region with inclusive lower bounds and exclusive upper bounds.
     Used by OCR, postprocessing, and export modules.
 
     Attributes:
