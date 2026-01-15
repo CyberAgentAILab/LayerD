@@ -20,6 +20,7 @@ dependencies = [
     "timm>=1.0.12",            # Required by BiRefNet model
     "kornia>=0.5.0",           # Required by BiRefNet model
     "pillow>=9.5.0",
+    "fsspec>=2021.10.0",       # Filesystem abstraction for cloud storage support
 ]
 
 [project.scripts]

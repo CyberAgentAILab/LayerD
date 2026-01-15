@@ -23,23 +23,49 @@ class BiRefNetMatting(BaseMatting):
         device: str = "cpu",
         weight_path: str | None = None,
     ) -> None:
+        """Initialize BiRefNet matting model.
+
+        Args:
+            hf_card: HuggingFace model card name (default: cyberagent/layerd-birefnet)
+            process_image_size: Processing resolution as (height, width).
+                If None, uses model's trained size from config.
+            device: Device to run inference on ('cpu' or 'cuda')
+            weight_path: Optional path to custom model weights (.pth file).
+                Supports local paths and cloud storage URLs via fsspec:
+                - Local: "/path/to/weights.pth"
+                - GCS: "gs://bucket/path/weights.pth" (requires: pip install gcsfs)
+                - S3: "s3://bucket/path/weights.pth" (requires: pip install s3fs)
+                - Azure: "abfs://container/path/weights.pth" (requires: pip install adlfs)
+                - HTTP: "https://example.com/weights.pth"
+
+        Example:
+            >>> # Local weights
+            >>> matting = BiRefNetMatting(weight_path="./custom_birefnet.pth")
+            >>>
+            >>> # GCS weights (requires gcsfs: pip install gcsfs)
+            >>> matting = BiRefNetMatting(weight_path="gs://my-bucket/models/birefnet.pth")
+            >>>
+            >>> # S3 weights (requires s3fs: pip install s3fs)
+            >>> matting = BiRefNetMatting(weight_path="s3://my-bucket/models/birefnet.pth")
+        """
         super().__init__()
         self.model = build_birefnet(hf_card)
         if weight_path is not None:
-            # Lazy import to avoid circular dependency (LayerD -> layerd_internal -> LayerD)
-            try:
-                from layerd_internal.gcsio import torch_load
+            # Use fsspec for unified I/O (works with local paths and cloud storage)
+            if isinstance(weight_path, str) and "://" in weight_path:
+                # Cloud storage path (gs://, s3://, abfs://, etc.)
+                import fsspec
 
-                state_dict = torch_load(
-                    weight_path,
-                    map_location="cpu",
-                    weights_only=True,
-                )
-            except ImportError:
-                # Fallback to standard torch.load if layerd_internal not available (OSS usage)
+                logger.info(f"Loading weights from {weight_path} via fsspec")
+                with fsspec.open(weight_path, "rb") as f:
+                    state_dict = torch.load(f, map_location="cpu", weights_only=True)
+            else:
+                # Local file path - use standard torch.load for better performance
+                logger.info(f"Loading weights from local path: {weight_path}")
                 state_dict = torch.load(weight_path, map_location="cpu", weights_only=True)
+
             self.model.load_state_dict(state_dict)
-            logger.info(f"Loaded weights from {weight_path}")
+            logger.info(f"Successfully loaded weights from {weight_path}")
         self.model.to(device)
         self.model.eval()
         self.device = device

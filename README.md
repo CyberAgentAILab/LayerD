@@ -55,6 +55,52 @@ layers = layerd.decompose(image)
 
 The output `layers` is a list of PIL Image objects in RGBA format.
 
+## Using Custom BiRefNet Weights
+
+LayerD supports loading custom-trained BiRefNet weights from local or cloud storage:
+
+### Local Weights
+
+```python
+from layerd import LayerD
+
+# Use custom locally-trained weights
+layerd = LayerD(matting_weight_path="./my_birefnet.pth")
+```
+
+### Cloud Storage (GCS, S3, Azure)
+
+LayerD uses [fsspec](https://filesystem-spec.readthedocs.io/) for cloud storage support. Install the appropriate backend for your storage provider:
+
+```bash
+# For Google Cloud Storage
+pip install gcsfs
+
+# For AWS S3
+pip install s3fs
+
+# For Azure Blob Storage
+pip install adlfs
+```
+
+Then use cloud URLs directly:
+
+```python
+from layerd import LayerD
+
+# Load from Google Cloud Storage (requires gcsfs)
+layerd = LayerD(matting_weight_path="gs://my-bucket/models/birefnet.pth")
+
+# Load from S3 (requires s3fs)
+layerd = LayerD(matting_weight_path="s3://my-bucket/models/birefnet.pth")
+
+# Load from Azure Blob Storage (requires adlfs)
+layerd = LayerD(matting_weight_path="abfs://container/models/birefnet.pth")
+
+# Load from HTTP/HTTPS (no extra package needed)
+layerd = LayerD(matting_weight_path="https://example.com/models/birefnet.pth")
+```
+
 ## Documentation
 
 - **[Installation Guide](docs/installation.md)** - Detailed setup instructions
