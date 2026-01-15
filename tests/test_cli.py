@@ -105,6 +105,7 @@ def test_run_decompose_invalid_format(monkeypatch: pytest.MonkeyPatch, tmp_path:
         run_decompose(args)
 
 
+@pytest.mark.slow
 def test_run_decompose_success(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """Test successful decomposition with run_decompose."""
     output_dir = tmp_path / "output"
@@ -142,6 +143,7 @@ def test_run_decompose_success(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) 
         assert layer_file.name == expected_name
 
 
+@pytest.mark.slow
 def test_main_success(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """Test the main() entry point with valid input."""
     output_dir = tmp_path / "output"
@@ -189,6 +191,7 @@ def test_main_error_handling(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) ->
     assert exc_info.value.code == 1
 
 
+@pytest.mark.slow
 def test_output_structure(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """Test that output files follow the expected structure."""
     output_dir = tmp_path / "output"

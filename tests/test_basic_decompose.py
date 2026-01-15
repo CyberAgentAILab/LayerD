@@ -11,6 +11,7 @@ from layerd import LayerD
 TEST_IMAGE_PATH = Path(__file__).parent.parent / "data" / "test_image_2.png"
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "fg_refine,bg_refine",
     [

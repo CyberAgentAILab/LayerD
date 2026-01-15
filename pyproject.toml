@@ -89,6 +89,11 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
+markers = [
+    "slow: marks tests as slow (loads ML models, runs inference, >30s on CPU)",
+    "integration: marks tests as integration tests (requires real models)",
+    "requires_gpu: marks tests that require GPU/CUDA",
+]
 filterwarnings = [
     "ignore::FutureWarning:timm.models.layers",
     "ignore::FutureWarning:timm.models.registry",
