@@ -91,7 +91,8 @@ class LayerOrganizer:
             >>> ocr_result = {"image_size": (800, 600), "blocks": [...]}
             >>> elements = organizer.organize(layers, ocr_result)
         """
-        assert len(layers) > 0, "At least one layer is required"
+        if not layers:
+            raise ValueError("At least one layer is required")
 
         # Determine canvas size
         if ocr_result is not None:

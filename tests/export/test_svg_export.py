@@ -83,9 +83,22 @@ def test_svg_builder_external_images(tmp_path: Path) -> None:
     # Should have external references
     assert "./images/" in svg_content
 
-    # Check that image files were created
-    assert (image_dir / "1_text.png").exists()
-    assert (image_dir / "2_image.png").exists()
+    # Check that image files were created and are valid
+    text_img_path = image_dir / "1_text.png"
+    image_img_path = image_dir / "2_image.png"
+    assert text_img_path.exists()
+    assert image_img_path.exists()
+
+    # Validate saved images are readable and have correct dimensions
+    from PIL import Image
+
+    text_img = Image.open(text_img_path)
+    assert text_img.mode == "RGBA", "Saved image should be RGBA"
+    assert text_img.size == (100, 50), "Image dimensions should match element"
+
+    image_img = Image.open(image_img_path)
+    assert image_img.mode == "RGBA", "Saved image should be RGBA"
+    assert image_img.size == (100, 100), "Image dimensions should match element"
 
 
 def test_svg_parser_base64() -> None:

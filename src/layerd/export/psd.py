@@ -62,8 +62,16 @@ class PSDBuilder(BaseExporter[bytes]):
         # Add layers in natural order
         # Elements are top-to-bottom (element[0] = topmost in visual stacking)
         # Photoshop renders layers in the same order for correct visual result
+
+        # Calculate padding width based on max ID to handle >99 layers
+        if elements:
+            max_id = max(e["id"] for e in elements)
+            pad_width = max(2, len(str(max_id)))
+        else:
+            pad_width = 2
+
         for element in elements:
-            layer_name = f"{element['type']}_{element['id']:02d}"
+            layer_name = f"{element['type']}_{element['id']:0{pad_width}d}"
             left = element["box"]["x_min"]
             top = element["box"]["y_min"]
 

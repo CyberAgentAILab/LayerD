@@ -176,7 +176,8 @@ class SVGParser:
 
             # Extract and load image
             href = img_tag.get("href") or img_tag.get("{http://www.w3.org/1999/xlink}href")
-            assert href is not None, "Image href is required"
+            if href is None:
+                raise ValueError("Image href is required for <image> elements in SVG")
 
             if href.startswith("data:image/png;base64,"):
                 image = self._load_base64_image(href)

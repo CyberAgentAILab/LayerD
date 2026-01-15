@@ -18,7 +18,8 @@ class GradientAwareLabeler(ElementLabeler):
 
     Args:
         entropy_threshold: Entropy threshold for vector/image classification (default: 5.0)
-        gradient_threshold: Pixel difference threshold for gradient detection (default: 0.3)
+        gradient_threshold: Mean absolute difference threshold between adjacent pixels (default: 0.3)
+                          Represents average color change between neighboring pixels.
                           Higher values = less sensitive to gradients
 
     Example:
@@ -39,8 +40,8 @@ class GradientAwareLabeler(ElementLabeler):
 
         Args:
             entropy_threshold: Entropy threshold for vector/image classification
-            gradient_threshold: Average pixel difference threshold for gradient detection.
-                              Mean absolute difference between adjacent pixels (0-255 scale).
+            gradient_threshold: Mean absolute difference threshold for gradient detection.
+                              Represents average color change between neighboring pixels.
                               Typical range: 0.1-1.0
         """
         self.entropy_threshold = entropy_threshold

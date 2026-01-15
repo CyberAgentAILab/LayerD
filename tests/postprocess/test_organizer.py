@@ -52,13 +52,22 @@ def test_organizer_basic_no_ocr() -> None:
 
     # Basic assertions
     assert len(elements) > 0, "Should return at least one element"
-    assert all("id" in elem for elem in elements), "All elements should have 'id'"
-    assert all("type" in elem for elem in elements), "All elements should have 'type'"
-    assert all("image" in elem for elem in elements), "All elements should have 'image'"
-    assert all("box" in elem for elem in elements), "All elements should have 'box'"
+    # Verify basic structure
+    assert all("id" in element for element in elements), "All elements should have 'id'"
+    assert all("type" in element for element in elements), "All elements should have 'type'"
+    assert all("image" in element for element in elements), "All elements should have 'image'"
+    assert all("box" in element for element in elements), "All elements should have 'box'"
+
+    # Verify box structure matches BoundingBox
+    for element in elements:
+        box = element["box"]
+        assert "x_min" in box, "Box should have x_min"
+        assert "y_min" in box, "Box should have y_min"
+        assert "x_max" in box, "Box should have x_max"
+        assert "y_max" in box, "Box should have y_max"
 
     # Without OCR, all elements should be "image" type
-    types = [elem["type"] for elem in elements]
+    types = [element["type"] for element in elements]
     assert all(t == "image" for t in types), "All elements should be 'image' type without OCR"
 
 
