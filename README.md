@@ -55,6 +55,20 @@ layers = layerd.decompose(image)
 
 The output `layers` is a list of PIL Image objects in RGBA format.
 
+## Using Custom Weights
+
+LayerD supports loading custom-trained BiRefNet weights from local paths or remote URLs:
+
+```python
+from layerd import LayerD
+
+# Local weights
+layerd = LayerD(matting_weight_path="./my_birefnet.pth")
+
+# Remote weights (requires appropriate fsspec backend, e.g., gcsfs for gs://)
+layerd = LayerD(matting_weight_path="gs://my-bucket/models/birefnet.pth")
+```
+
 ## Documentation
 
 - **[Installation Guide](docs/installation.md)** - Detailed setup instructions
