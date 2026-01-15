@@ -40,3 +40,26 @@ def matting_process_size(request: pytest.FixtureRequest) -> tuple[int, int]:
     """Fixture to access the matting-process-size option as a tuple."""
     size = request.config.getoption("--matting-process-size")
     return tuple(size)
+
+
+@pytest.fixture(scope="module")
+def layerd_model(matting_process_size: tuple[int, int]) -> "LayerD":  # noqa: F821
+    """Create LayerD model once per module with smaller size for faster CPU tests.
+
+    This fixture creates a LayerD model with optimized test parameters once
+    per module. The model loads ~1GB BiRefNet weights, so reusing the same
+    instance significantly speeds up test runs.
+
+    The default matting_process_size is 256x256 instead of the default 1024x1024,
+    which provides 4x speedup on CPU while maintaining test coverage.
+    For full-resolution testing, use: pytest --matting-process-size 1024 1024
+
+    Returns:
+        LayerD: A LayerD model configured for testing on CPU.
+    """
+    from layerd import LayerD
+
+    return LayerD(
+        matting_hf_card="cyberagent/layerd-birefnet",
+        matting_process_size=matting_process_size,
+    ).to("cpu")

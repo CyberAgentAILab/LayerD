@@ -34,17 +34,41 @@ uv sync --extra train
 
 ## Testing
 
+### Quick Start
+
+LayerD uses pytest markers to separate fast and slow tests, enabling rapid development cycles:
+
+```bash
+# Fast tests only (recommended for development) - completes in <5 seconds
+uv run pytest -m "not slow"
+
+# All tests (includes model loading and inference) - takes 1-2 minutes
+uv run pytest
+
+# Only slow tests (model-heavy tests)
+uv run pytest -m "slow"
+```
+
 ### Running Tests
 
 ```bash
-# Run all tests
+# Fast tests only (recommended for development)
+uv run pytest -m "not slow"
+
+# All tests
 uv run pytest
+
+# Only slow tests
+uv run pytest -m "slow"
 
 # Run tests with image output saved
 uv run pytest --save-images
 
 # Run tests with custom matting process size
 uv run pytest --matting-process-size 512 512
+
+# Full resolution testing (1024x1024, slower but higher quality)
+uv run pytest --matting-process-size 1024 1024
 
 # Run specific test
 uv run pytest tests/test_basic_decompose.py::test_decompose
@@ -53,23 +77,79 @@ uv run pytest tests/test_basic_decompose.py::test_decompose
 uv run pytest -v
 ```
 
+### Test Markers
+
+LayerD uses pytest markers to categorize tests:
+
+- **`slow`**: Tests that load ML models and run inference (>30s on CPU). Marked tests:
+  - `test_basic_decompose.py::test_decompose` - Tests decomposition with various refine options (4 parametrized tests)
+  - `test_cli.py::test_run_decompose_success` - Tests CLI decomposition
+  - `test_cli.py::test_main_success` - Tests main entry point
+  - `test_cli.py::test_output_structure` - Tests output file structure
+- **`integration`**: Tests requiring real models and external resources
+- **`requires_gpu`**: Tests that require GPU/CUDA
+
+**Performance**: Fast tests (without `slow` marker) complete in <5 seconds, while slow tests take 1-2 minutes. This 60x speedup enables rapid test-driven development.
+
 ### Test Configuration
 
 - **Test fixtures**: Defined in `tests/conftest.py`
+  - `matting_process_size`: Configurable matting size (default: 256x256 for 4x speedup vs 1024x1024)
+  - `layerd_model`: Module-scoped LayerD model fixture for efficient test reuse
+  - `save_images`: Flag to save test outputs
 - **Custom options**:
   - `--save-images`: Save test outputs to `tests/output/` directory
-  - `--matting-process-size`: Override default matting model process size
+  - `--matting-process-size WIDTH HEIGHT`: Override default matting model process size (default: 256 256)
 - **Test outputs**: Saved to `tests/output/` (gitignored)
 - **Warning filters**: FutureWarnings from timm library are filtered (configured in `pyproject.toml`)
+
+### Performance Optimization
+
+The default `matting_process_size` is 256x256 instead of 1024x1024, providing:
+
+- **4x faster** slow tests (1-2 minutes vs 5-8 minutes)
+- **60x faster** development cycle when using `-m "not slow"` (<5 seconds vs 5 minutes)
+- Maintained test coverage with reduced computational cost
+
+For full-resolution testing (e.g., CI/CD, release validation):
+
+```bash
+# Run all tests with full 1024x1024 resolution
+uv run pytest --matting-process-size 1024 1024
+
+# Run only slow tests with full resolution
+uv run pytest -m "slow" --matting-process-size 1024 1024
+```
+
+### CI/CD Usage
+
+Recommended CI/CD pipeline configuration:
+
+```yaml
+# Fast tests on every commit (development feedback)
+- name: Fast Tests
+  run: uv run pytest -m "not slow"
+
+# Full test suite on pull requests
+- name: Full Test Suite
+  run: uv run pytest
+
+# Full resolution tests nightly or before release
+- name: Full Resolution Tests
+  run: uv run pytest --matting-process-size 1024 1024
+```
 
 ### Writing Tests
 
 When writing tests:
 
-1. Use pytest fixtures for common setup
+1. Use pytest fixtures for common setup (especially `layerd_model` for model reuse)
 2. Add type annotations to all test functions
 3. Use descriptive test names that explain what is being tested
-4. Clean up any temporary files created during tests
+4. Mark slow tests with `@pytest.mark.slow` if they load models or run inference
+5. Mark GPU-only tests with `@pytest.mark.requires_gpu`
+6. Use the default `matting_process_size` fixture for consistent performance
+7. Clean up any temporary files created during tests
 
 ## Code Quality
 
