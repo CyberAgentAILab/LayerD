@@ -46,8 +46,10 @@ class TransformersBackend(BaseOCR):
 
     Example:
         >>> from layerd.ocr import build_ocr
+        >>> from PIL import Image
         >>> ocr = build_ocr("transformers", device="cuda")
-        >>> result = ocr("design.png")
+        >>> # Supports PIL Images, numpy arrays, and file paths (via fsspec)
+        >>> result = ocr(Image.open("design.png"))
         >>> for block in result['blocks']:
         ...     print(f"Text: {block['text']}")
 
@@ -181,10 +183,13 @@ class TransformersBackend(BaseOCR):
 
         # Simple heuristic: treat each non-empty line as a separate block
         # TODO: Extract bounding boxes from model-specific outputs
+        # NOTE: This creates full-width bounding boxes stacked vertically,
+        # which may not accurately represent actual text layout
         block_height = image_height // max(len(lines), 1)
 
         for i, line in enumerate(lines):
             # Create simple top-to-bottom blocks spanning full width
+            # (fallback until proper bounding box extraction is implemented)
             bbox = BoundingBox(
                 x_min=0, y_min=i * block_height, x_max=image_width, y_max=min((i + 1) * block_height, image_height)
             )

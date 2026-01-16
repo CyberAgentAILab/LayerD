@@ -99,7 +99,7 @@ class EASTBackend(BaseOCR):
 
         # Load EAST model using high-level API
         try:
-            self.detector = cv2.dnn.TextDetectionModel_EAST(str(model_path_obj))  # type: ignore[attr-defined]
+            self.detector = cv2.dnn.TextDetectionModel_EAST(str(model_path_obj))  # type: ignore[attr-defined]  # OpenCV stubs do not declare TextDetectionModel_EAST in cv2.dnn
         except cv2.error as e:
             raise RuntimeError(
                 f"Failed to load EAST model from {model_path_obj}. "

@@ -43,7 +43,7 @@ train = [
 # OCR support with transformers backend (CUDA required)
 # EAST backend works without extras (uses opencv from core)
 ocr = [
-    "transformers>=4.37.2,<=4.48.0",  # GOT-OCR2 compatibility
+    "transformers>=4.37.2,<=4.48.0",  # GOT-OCR2 requires transformers<=4.48.0 due to API changes in model.chat()
     "verovio>=4.3.1",                 # Required by GOT-OCR2
 ]
 # Convenience group for all optional dependencies

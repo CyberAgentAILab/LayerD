@@ -321,8 +321,8 @@ class LayerDPipeline:
                 except ImportError as e:
                     if self.ocr_backend == "transformers":
                         raise ImportError(
-                            f"Transformers OCR backend requires optional dependencies. "
-                            f"Install with: pip install layerd[ocr]"
+                            "Transformers OCR backend requires optional dependencies. "
+                            "Install with: pip install layerd[ocr]"
                         ) from e
                     else:
                         # EAST backend should work without extras

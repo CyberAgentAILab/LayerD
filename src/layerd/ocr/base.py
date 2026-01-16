@@ -149,7 +149,9 @@ class BaseOCR(ABC):
             path_str = str(image)
             with fsspec.open(path_str, "rb") as f:
                 pil_img = Image.open(f)
-                # Load image data immediately (PIL loads lazily)
+                # Force image data to be read while the fsspec file handle is still open.
+                # PIL loads lazily by default, so without this, later access could fail after
+                # the context manager closes the underlying file or delay I/O/decoding errors.
                 pil_img.load()
                 return pil_img.convert("RGB")
         elif isinstance(image, np.ndarray):
