@@ -22,6 +22,8 @@ Use the low-level `LayerD` class when you need:
 - Custom postprocessing beyond the standard pipeline
 - Integration with existing layer processing code
 
+See the [Inference Guide](inference.md) for detailed low-level API documentation.
+
 ### Quick Comparison
 
 ```python
