@@ -288,14 +288,12 @@ class TestPipelineResult:
         assert psd_bytes == b"PSD data"
         mock_build_exporter.assert_called_once_with("psd", compression="zip", color_depth=16)
 
-    @patch("layerd.pipeline.Path.mkdir")
-    @patch("builtins.open", create=True)
+    @patch("fsspec.open", create=True)
     @patch("layerd.pipeline.SVGBuilder")
     def test_save_svg_autodetect(
         self,
         mock_svg_builder: MagicMock,
-        mock_open: MagicMock,
-        mock_mkdir: MagicMock,
+        mock_fsspec_open: MagicMock,
     ) -> None:
         """Test save with auto-detected SVG format."""
         mock_builder = MagicMock()
@@ -310,16 +308,14 @@ class TestPipelineResult:
         )
 
         result.save("output.svg")
-        mock_open.assert_called_once_with("output.svg", "w")
+        mock_fsspec_open.assert_called_once_with("output.svg", "w")
 
-    @patch("layerd.pipeline.Path.mkdir")
-    @patch("builtins.open", create=True)
+    @patch("fsspec.open", create=True)
     @patch("layerd.pipeline.build_exporter")
     def test_save_psd_autodetect(
         self,
         mock_build_exporter: MagicMock,
-        mock_open: MagicMock,
-        mock_mkdir: MagicMock,
+        mock_fsspec_open: MagicMock,
     ) -> None:
         """Test save with auto-detected PSD format."""
         mock_builder = MagicMock()
@@ -334,7 +330,7 @@ class TestPipelineResult:
         )
 
         result.save("output.psd")
-        mock_open.assert_called_once_with("output.psd", "wb")
+        mock_fsspec_open.assert_called_once_with("output.psd", "wb")
 
     def test_save_unknown_extension_raises(self) -> None:
         """Test that unknown extension raises ValueError."""
@@ -348,14 +344,12 @@ class TestPipelineResult:
         with pytest.raises(ValueError, match="Cannot determine format"):
             result.save("output.txt")
 
-    @patch("layerd.pipeline.Path.mkdir")
-    @patch("builtins.open", create=True)
+    @patch("fsspec.open", create=True)
     @patch("layerd.pipeline.SVGBuilder")
     def test_save_explicit_format(
         self,
         mock_svg_builder: MagicMock,
-        mock_open: MagicMock,
-        mock_mkdir: MagicMock,
+        mock_fsspec_open: MagicMock,
     ) -> None:
         """Test save with explicit format parameter."""
         mock_builder = MagicMock()
@@ -370,4 +364,4 @@ class TestPipelineResult:
         )
 
         result.save("output", format="svg")
-        mock_open.assert_called_once_with("output", "w")
+        mock_fsspec_open.assert_called_once_with("output", "w")
