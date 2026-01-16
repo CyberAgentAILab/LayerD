@@ -40,6 +40,12 @@ train = [
     "hydra-core>=1.3.2",       # Config management
     "accelerate>=0.28.0",      # Optional distributed training
 ]
+# OCR support with transformers backend (CUDA required)
+# EAST backend works without extras (uses opencv from core)
+ocr = [
+    "transformers>=4.37.2,<=4.48.0",  # GOT-OCR2 compatibility
+    "verovio>=4.3.1",                 # Required by GOT-OCR2
+]
 # Convenience group for all optional dependencies
 all = [
     "datasets>=2.14.4",
@@ -47,6 +53,8 @@ all = [
     "pydantic>=2.5.2",
     "hydra-core>=1.3.2",
     "accelerate>=0.28.0",
+    "transformers>=4.37.2,<=4.48.0",
+    "verovio>=4.3.1",
 ]
 
 [build-system]
