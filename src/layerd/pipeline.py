@@ -57,7 +57,7 @@ class PipelineResult(BaseModel):
     Attributes:
         elements: Organized elements with bounding boxes and type classification
         layers: List of RGBA PIL Images (background + foreground layers)
-        ocr_result: Reserved for future OCR integration (Phase 3)
+        ocr_result: OCR result with detected text blocks (None if OCR disabled)
         canvas_size: Original image size as (width, height) tuple
     """
 
@@ -179,6 +179,7 @@ class LayerDPipeline:
 
     Orchestrates the complete workflow from image input to export:
     - Layer decomposition with BiRefNet-based matting
+    - Optional OCR for text detection/recognition
     - Layer organization with element extraction
     - Element classification (text vs vector vs image)
     - Export to SVG or PSD formats
@@ -195,7 +196,9 @@ class LayerDPipeline:
         fg_refine_num_colors: Number of colors for foreground refinement
         bg_refine_num_colors: Number of colors for background refinement
         kernel_scale: Kernel scale for refinement
-        overlap_threshold: Overlap threshold for element organization
+        ocr_backend: OCR backend ("east" for CPU/CUDA, "transformers" for CUDA only). None = disabled
+        ocr_kwargs: Additional OCR backend parameters
+        overlap_threshold: OCR-to-layer matching threshold (0.0-1.0)
         labeler: Element classifier (None = disable, default = EntropyLabeler)
         labeler_threshold: Entropy threshold for default EntropyLabeler
         device: Device for computation ("cpu" or "cuda")
@@ -204,9 +207,18 @@ class LayerDPipeline:
         Device can be changed after initialization using the .to() method.
 
     Example:
-        >>> pipeline = LayerDPipeline(device="cuda")
-        >>> result = pipeline(image, max_iterations=3)
+        >>> # Without OCR
+        >>> pipeline = LayerDPipeline(device="cpu")
+        >>> result = pipeline(image)
         >>> result.save("output.svg")
+
+        >>> # With EAST OCR (CPU-compatible)
+        >>> pipeline = LayerDPipeline(ocr_backend="east", device="cpu")
+        >>> result = pipeline(image)
+
+        >>> # With Transformers OCR (CUDA required)
+        >>> pipeline = LayerDPipeline(ocr_backend="transformers", device="cuda")
+        >>> result = pipeline(image)
     """
 
     def __init__(
@@ -221,6 +233,9 @@ class LayerDPipeline:
         fg_refine_num_colors: int = 2,
         bg_refine_num_colors: int = 10,
         kernel_scale: float = 0.015,
+        # OCR parameters
+        ocr_backend: Literal["east", "transformers"] | None = None,
+        ocr_kwargs: dict[str, Any] | None = None,
         # LayerOrganizer parameters
         overlap_threshold: float = 0.9,
         labeler: ElementLabeler | None = _UNSET,  # type: ignore[assignment]  # Sentinel for "not provided"
@@ -242,6 +257,11 @@ class LayerDPipeline:
             kernel_scale=kernel_scale,
             device=device,
         )
+
+        # Store OCR parameters (lazy loading)
+        self.ocr_backend = ocr_backend
+        self.ocr_kwargs = ocr_kwargs or {}
+        self._ocr: Any = None  # Lazy loaded
 
         # Store LayerOrganizer parameters
         self.overlap_threshold = overlap_threshold
@@ -268,7 +288,7 @@ class LayerDPipeline:
             max_iterations: Maximum number of decomposition iterations
 
         Returns:
-            PipelineResult with elements, layers, and canvas size
+            PipelineResult with elements, layers, OCR result, and canvas size
 
         Note:
             SVG/PSD generation is done via PipelineResult.to_svg()/to_psd()/save()
@@ -276,6 +296,7 @@ class LayerDPipeline:
         Raises:
             ValueError: If image is invalid or decomposition fails
             RuntimeError: If a pipeline stage fails unexpectedly
+            ImportError: If OCR backend dependencies are missing
         """
         # Step 1: Decompose with LayerD
         try:
@@ -284,23 +305,52 @@ class LayerDPipeline:
         except Exception as e:
             raise RuntimeError(f"LayerD decomposition failed: {e}") from e
 
-        # Step 2: Organize layers
+        # Step 2: OCR (optional, lazy loaded)
+        ocr_result: dict[str, Any] | None = None
+        if self.ocr_backend is not None:
+            if self._ocr is None:
+                try:
+                    from layerd.ocr import build_ocr
+
+                    logger.info(f"Loading OCR backend: {self.ocr_backend}")
+                    self._ocr = build_ocr(
+                        self.ocr_backend,
+                        device=self.device,
+                        **self.ocr_kwargs,
+                    )
+                except ImportError as e:
+                    if self.ocr_backend == "transformers":
+                        raise ImportError(
+                            "Transformers OCR backend requires optional dependencies. "
+                            "Install with: pip install layerd[ocr]"
+                        ) from e
+                    else:
+                        # EAST backend should work without extras
+                        raise
+
+            try:
+                ocr_result = self._ocr.infer(image)
+                logger.info(f"OCR detected {len(ocr_result['blocks'])} text blocks")
+            except Exception as e:
+                logger.warning(f"OCR failed: {e}. Continuing without OCR.")
+                ocr_result = None
+
+        # Step 3: Organize layers
         try:
             organizer = LayerOrganizer(
                 overlap_threshold=self.overlap_threshold,
                 labeler=self.labeler,
             )
-            # No OCR in Phase 2 - will be added in Phase 3
-            elements = organizer.organize(layers, ocr_result=None)
+            elements = organizer.organize(layers, ocr_result=ocr_result)
             logger.info(f"Organized {len(elements)} elements from {len(layers)} layers")
         except Exception as e:
             raise RuntimeError(f"Layer organization failed: {e}") from e
 
-        # Step 3: Return result (SVG/PSD generation moved to PipelineResult methods)
+        # Step 4: Return result (SVG/PSD generation moved to PipelineResult methods)
         return PipelineResult(
             elements=elements,
             layers=layers,
-            ocr_result=None,  # Reserved for Phase 3 OCR integration
+            ocr_result=ocr_result,
             canvas_size=canvas_size,
         )
 
@@ -313,10 +363,26 @@ class LayerDPipeline:
         Returns:
             Self for method chaining
 
+        Raises:
+            ValueError: If transformers OCR backend is used with CPU
+
         Example:
             >>> pipeline = LayerDPipeline(device="cpu")
             >>> pipeline.to("cuda")  # Move to GPU
         """
+        # Validate OCR backend compatibility with device
+        if self.ocr_backend == "transformers" and device == "cpu":
+            raise ValueError(
+                "Transformers OCR backend requires CUDA. "
+                "Use ocr_backend='east' for CPU support."
+            )
+
+        # Move LayerD model
         self.layerd = self.layerd.to(device)
         self.device = device
+
+        # Move OCR model if already loaded
+        if self._ocr is not None:
+            self._ocr = self._ocr.to(device)
+
         return self
