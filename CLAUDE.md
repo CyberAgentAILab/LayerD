@@ -18,16 +18,25 @@ All detailed documentation is now organized in the `docs/` directory:
 - **[docs/architecture.md](docs/architecture.md)** - Code architecture, design patterns, and implementation details
 - **[docs/development.md](docs/development.md)** - Development setup, testing, code quality tools, and workflows
 - **[docs/installation.md](docs/installation.md)** - Installation options and troubleshooting
-- **[docs/inference.md](docs/inference.md)** - Inference usage (CLI and Python API)
+- **[docs/pipeline.md](docs/pipeline.md)** - High-level pipeline API and orchestration
+- **[docs/inference.md](docs/inference.md)** - Low-level decomposition API (CLI and Python)
+- **[docs/export.md](docs/export.md)** - SVG and PSD export formats
 - **[docs/training.md](docs/training.md)** - Training workflows and dataset preparation
 - **[docs/evaluation.md](docs/evaluation.md)** - Evaluation metrics and usage
 - **[docs/troubleshooting.md](docs/troubleshooting.md)** - Common issues and solutions
 
 ## Key Files and Components
 
-### Main Pipeline
+### Pipeline Architecture
 
-- **[src/layerd/models/layerd.py](src/layerd/models/layerd.py)** - Main `LayerD` class with `decompose()` method
+#### High-Level API (Recommended for Most Users)
+
+- **[src/layerd/pipeline.py](src/layerd/pipeline.py)** - `LayerDPipeline` orchestration (decompose → organize → classify → export)
+- **[docs/pipeline.md](docs/pipeline.md)** - Pipeline usage guide
+
+#### Low-Level Decomposition API
+
+- **[src/layerd/models/layerd.py](src/layerd/models/layerd.py)** - `LayerD` class with `decompose()` method
 - **[src/layerd/models/helpers.py](src/layerd/models/helpers.py)** - Refinement utilities (unblend, mask operations)
 
 ### Model Implementations
@@ -52,6 +61,34 @@ All detailed documentation is now organized in the `docs/` directory:
   - `edit_distance.py` - LayersEditDist metric
   - `dtw.py` - Dynamic Time Warping
   - `metrics.py` - Per-layer metrics (RGBL1, AlphaIoU)
+
+### Element Organization & Classification
+
+- **[src/layerd/postprocess/organizer.py](src/layerd/postprocess/organizer.py)** - `LayerOrganizer` for element extraction
+- **[src/layerd/classification/](src/layerd/classification/)** - Element type labeling
+  - `base.py` - `ElementLabeler` abstract class
+  - `entropy.py` - `EntropyLabeler` implementation
+  - `gradient.py` - `GradientAwareLabeler` implementation
+
+### Export Functionality
+
+- **[src/layerd/export/](src/layerd/export/)** - SVG and PSD export implementations
+  - `base.py` - `BaseExporter` abstract class
+  - `svg.py` - `SVGBuilder` implementation
+  - `psd.py` - `PSDBuilder` implementation
+- **[docs/export.md](docs/export.md)** - Export format guide
+
+### OCR Support (Optional)
+
+- **[src/layerd/ocr/](src/layerd/ocr/)** - Text detection and recognition
+  - `base.py` - `BaseOCR` abstract class
+  - `east_backend.py` - EAST detector (lightweight, CPU-compatible)
+  - `transformers_backend.py` - GOT-OCR2 (full OCR with recognition)
+  - `README.md` - OCR backend documentation
+
+### Common Types
+
+- **[src/layerd/types.py](src/layerd/types.py)** - Shared type definitions (`BoundingBox`, `Element`)
 
 ### Utilities
 
@@ -91,8 +128,21 @@ See [.claude/skills/README.md](.claude/skills/README.md) for details.
 ### Inference
 
 ```bash
-layerd --input image.png --output-dir outputs/                    # CLI
-uv run python ./tools/infer.py --input "data/*.png" --output-dir outputs/  # Batch
+# High-level pipeline (recommended)
+layerd --input image.png --output-dir outputs/  # CLI with export support
+
+# Python API
+python -c "
+from layerd import LayerDPipeline
+from PIL import Image
+
+pipeline = LayerDPipeline()
+result = pipeline(Image.open('image.png'))
+result.save('output.svg')  # or .psd
+"
+
+# Low-level API (batch processing)
+uv run python ./tools/infer.py --input "data/*.png" --output-dir outputs/
 ```
 
 ### Training

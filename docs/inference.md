@@ -1,6 +1,8 @@
 # Inference Guide
 
-This guide covers how to use LayerD for layer decomposition inference, from simple Python scripts to batch processing.
+This guide covers the low-level `LayerD` API for layer decomposition. For complete end-to-end workflows with export support, see the [Pipeline Guide](pipeline.md).
+
+> **Note**: For most users, we recommend using [`LayerDPipeline`](pipeline.md) which provides a complete workflow including decomposition, organization, classification, and export to SVG/PSD formats.
 
 ## Quick Start
 
@@ -217,6 +219,8 @@ uv run python ./tools/infer.py \
   --matting-weight-path /path/to/trained/weights.pth \
   --device cuda
 ```
+
+> **Note**: For using custom weights with the high-level pipeline API, see [Pipeline Guide - Custom Weights](pipeline.md#custom-weights).
 
 ## Input Recommendations
 

@@ -58,8 +58,11 @@ See [evaluation.md](evaluation.md) for usage details.
 
 ```
 src/layerd/
+├── pipeline.py            # LayerDPipeline (high-level orchestration)
+├── types.py               # Common types (BoundingBox, Element)
+├── cli.py                 # CLI entry point
 ├── models/
-│   ├── layerd.py          # Main LayerD class
+│   ├── layerd.py          # LayerD class (low-level decomposition)
 │   ├── helpers.py         # Refinement utilities (unblend, mask ops, color estimation)
 │   ├── matting/           # Matting model implementations
 │   │   ├── base.py        # BaseMatting abstract class
@@ -69,6 +72,25 @@ src/layerd/
 │       ├── base.py        # BaseInpaint abstract class
 │       ├── lama_inpaint.py
 │       └── __init__.py    # Registry with build_inpaint()
+├── classification/        # Element type labeling
+│   ├── base.py            # ElementLabeler abstract class
+│   ├── entropy.py         # EntropyLabeler implementation
+│   ├── gradient.py        # GradientAwareLabeler implementation
+│   └── utils.py           # Classification utilities
+├── postprocess/           # Layer organization
+│   └── organizer.py       # LayerOrganizer for element extraction
+├── export/                # Format exporters
+│   ├── base.py            # BaseExporter abstract class
+│   ├── svg.py             # SVGBuilder and SVGParser
+│   ├── psd.py             # PSDBuilder
+│   └── __init__.py        # Registry with build_exporter()
+├── ocr/                   # Optional text detection/recognition
+│   ├── base.py            # BaseOCR abstract class
+│   ├── east_backend.py    # EAST detector (lightweight, CPU-compatible)
+│   ├── transformers_backend.py  # GOT-OCR2 (full OCR with recognition)
+│   ├── types.py           # OCR types and data structures
+│   ├── __init__.py        # OCR registry
+│   └── README.md          # OCR backend documentation
 ├── matting/birefnet/      # BiRefNet training code
 │   ├── train.py           # Training loop
 │   ├── dataset.py         # Dataset implementation
@@ -89,12 +111,41 @@ src/layerd/
     └── cr_renderer/
 ```
 
+## Pipeline Architecture Flow
+
+The high-level `LayerDPipeline` orchestrates the complete workflow:
+
+```
+Image Input
+    ↓
+[LayerD.decompose()]
+    ↓
+RGBA Layers (list of PIL Images)
+    ↓
+[Optional: OCR Detection] ← EAST or GOT-OCR2 backend
+    ↓
+[LayerOrganizer.organize()]
+    ↓
+Connected Components (per-layer)
+    ↓
+[ElementLabeler.label()]
+    ↓
+Classified Elements (text/vector/image)
+    ↓
+[SVGBuilder / PSDBuilder]
+    ↓
+SVG / PSD Output
+```
+
+For low-level API users, only the first step (`LayerD.decompose()`) is executed, returning raw RGBA layers for custom processing.
+
 ## Key Design Patterns
 
-1. **Factory Pattern**: Models are created via `build_matting()` and `build_inpaint()` functions with string identifiers
-2. **Abstract Base Classes**: All models inherit from `BaseMatting` or `BaseInpaint` with validation
+1. **Factory Pattern**: Models are created via `build_matting()`, `build_inpaint()`, and `build_exporter()` functions with string identifiers
+2. **Abstract Base Classes**: All models inherit from base classes (`BaseMatting`, `BaseInpaint`, `BaseExporter`, `BaseOCR`, `ElementLabeler`) with validation
 3. **Iterative Decomposition**: `decompose()` runs `_decompose_step()` until no more layers or max iterations reached
 4. **PIL Image Interface**: Main API uses PIL Images; internal processing uses numpy arrays
+5. **Pluggable Components**: Classification, OCR, and export modules use strategy pattern for extensibility
 
 ## Important Implementation Details
 

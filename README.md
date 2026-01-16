@@ -66,6 +66,52 @@ The pipeline handles decomposition, organization, and export in one call. Result
 - **Custom Weights** - Load fine-tuned models from local or remote storage
 - **OCR Support** - Text detection and recognition (coming soon)
 
+## Which API Should I Use?
+
+### High-Level Pipeline API (Recommended for Most Users)
+
+Use [`LayerDPipeline`](docs/pipeline.md) when you want:
+
+- Complete end-to-end workflow (decompose → organize → export)
+- SVG or PSD output with structured elements
+- Optional OCR integration for text detection
+- Element classification (text/vector/image)
+
+See the [Pipeline Guide](docs/pipeline.md) for details.
+
+### Low-Level Decomposition API
+
+Use [`LayerD`](docs/inference.md) when you need:
+
+- Direct access to raw RGBA layer images
+- Custom post-processing logic
+- Integration with your own export workflow
+- Maximum control over the decomposition process
+
+See the [Inference Guide](docs/inference.md) for details.
+
+## Export Formats
+
+### SVG (Scalable Vector Graphics)
+
+Best for:
+
+- Web applications and responsive design
+- Self-contained files (base64 embedding)
+- Easy inspection and editing in code
+- Metadata preservation
+
+### PSD (Photoshop Document)
+
+Best for:
+
+- Professional design workflows
+- Direct Photoshop editing
+- Multi-bit depth support (8/16/32-bit)
+- Industry-standard format
+
+See the [Export Guide](docs/export.md) for detailed format comparison.
+
 ## Advanced Usage
 
 For fine-grained control, use the low-level API:

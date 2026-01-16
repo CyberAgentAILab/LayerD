@@ -259,6 +259,99 @@ samples = list(pred_dir.iterdir())[:100]
 2. Verify alpha quality: `compute_alpha_iou(layer_pred, layer_gt)` should be > 0.8
 3. Check for extra/missing layers
 
+## Export Issues
+
+### SVG file size too large
+
+**Problem:** Generated SVG files are very large (100MB+)
+
+**Solutions:**
+
+```python
+# Use external image mode instead of base64 embedding
+from layerd import LayerDPipeline
+
+pipeline = LayerDPipeline()
+result = pipeline(image)
+result.save("output.svg", image_mode="external", image_dir="./images")
+```
+
+Additional tips:
+
+- Reduce layer count with higher matting threshold
+- Use fewer iterations: `pipeline(image, max_iterations=2)`
+- Consider PSD format for large designs
+
+### PSD not opening in Photoshop
+
+**Problem:** Adobe Photoshop shows "Not a valid Photoshop document" error
+
+**Solutions:**
+
+```python
+# Try different compression method
+result.save("output.psd", compression="rle")  # Default
+# or
+result.save("output.psd", compression="zip")
+
+# Verify color mode compatibility
+result.save("output.psd", color_depth=8)  # Try 8-bit instead of 16/32
+```
+
+Common causes:
+
+- Corrupted file during write (check disk space)
+- Very large files (>2GB) may have compatibility issues
+- Some Photoshop versions have stricter validation
+
+### Export fails with "No module named 'pytoshop'"
+
+**Problem:** PSD export raises import error
+
+**Solution:** Install LayerD with PSD support:
+
+```bash
+pip install "git+https://github.com/CyberAgentAILab/LayerD.git#egg=layerd[psd]"
+```
+
+### Missing images in exported SVG
+
+**Problem:** SVG shows empty boxes or missing images
+
+**Solutions:**
+
+```python
+# For external mode, verify image directory exists
+result.save("output.svg", image_mode="external", image_dir="./images")
+
+# Check that images/ directory was created
+# Images should be in: ./images/element_0.png, ./images/element_1.png, etc.
+
+# Or use base64 mode for self-contained SVG
+result.save("output.svg", image_mode="base64")
+```
+
+### Element classification is incorrect
+
+**Problem:** Text detected as image, or vice versa
+
+**Solutions:**
+
+```python
+# Use custom labeler with adjusted threshold
+from layerd import LayerDPipeline, EntropyLabeler
+
+labeler = EntropyLabeler(entropy_threshold=4.0)  # Default: 5.0
+pipeline = LayerDPipeline(labeler=labeler)
+result = pipeline(image)
+
+# Or use gradient-aware labeler
+from layerd import GradientAwareLabeler
+pipeline = LayerDPipeline(labeler=GradientAwareLabeler())
+```
+
+See [Pipeline Guide - Element Classification](pipeline.md#element-classification) for details.
+
 ## General Issues
 
 ### Import errors
