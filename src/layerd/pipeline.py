@@ -33,6 +33,7 @@ import logging
 from pathlib import Path
 from typing import Any, Literal
 
+import fsspec
 from PIL import Image
 from pydantic import BaseModel, ConfigDict
 
@@ -128,9 +129,11 @@ class PipelineResult(BaseModel):
         """Save result to file.
 
         Format auto-detected from file extension if not specified.
+        Supports local paths and cloud storage (gs://, s3://, abfs://, http://, etc.)
+        via fsspec.
 
         Args:
-            path: Output file path
+            path: Output file path (local or remote URL)
             format: Export format ("svg" or "psd"), auto-detected if None
             **kwargs: Format-specific options (passed to to_svg() or to_psd())
 
@@ -138,9 +141,9 @@ class PipelineResult(BaseModel):
             ValueError: If format cannot be determined or is unsupported
 
         Examples:
-            >>> result.save("output.svg")  # Auto-detects SVG format
-            >>> result.save("output.psd")  # Auto-detects PSD format
-            >>> result.save("output", format="svg")  # Explicit format
+            >>> result.save("output.svg")  # Local file
+            >>> result.save("gs://bucket/output.svg")  # Google Cloud Storage
+            >>> result.save("s3://bucket/output.psd")  # AWS S3
             >>> result.save("output.svg", image_mode="external", image_dir="./img")
         """
         # Auto-detect format from extension
@@ -168,9 +171,8 @@ class PipelineResult(BaseModel):
         else:
             raise ValueError(f"Unsupported format: {format}. Use 'svg' or 'psd'")
 
-        # Save to local file
-        Path(path).parent.mkdir(parents=True, exist_ok=True)
-        with open(path, mode) as f:
+        # Save to file (supports local paths and cloud storage via fsspec)
+        with fsspec.open(path, mode) as f:
             f.write(data)
 
 
