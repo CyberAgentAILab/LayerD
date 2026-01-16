@@ -374,7 +374,10 @@ class LayerDPipeline:
         """
         # Validate OCR backend compatibility with device
         if self.ocr_backend == "transformers" and device == "cpu":
-            raise ValueError("Transformers OCR backend requires CUDA. Use ocr_backend='east' for CPU support.")
+            raise ValueError(
+                "Transformers OCR backend requires CUDA. "
+                "Use ocr_backend='east' for CPU support."
+            )
 
         # Move LayerD model
         self.layerd = self.layerd.to(device)
