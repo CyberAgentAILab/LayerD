@@ -42,18 +42,43 @@ For other installation options (dataset generation, training, development), see 
 
 ## Quick Start
 
-Decompose an image into layers:
+Decompose an image into layers and export to SVG:
 
 ```python
+from layerd import LayerDPipeline
 from PIL import Image
-from layerd import LayerD
 
+pipeline = LayerDPipeline(device="cpu")
 image = Image.open("./data/test_image_2.png")
-layerd = LayerD(matting_hf_card="cyberagent/layerd-birefnet").to("cpu")
-layers = layerd.decompose(image)
+result = pipeline(image)
+result.save("output.svg")
 ```
 
-The output `layers` is a list of PIL Image objects in RGBA format.
+The pipeline handles decomposition, organization, and export in one call. Results include organized elements with type classification (text/vector/image).
+
+## Features
+
+- **Layer Decomposition** - BiRefNet-based matting extracts clean layers from raster designs
+- **SVG Export** - Generate scalable vector graphics with embedded or external images
+- **PSD Export** - Create Photoshop documents with editable layers
+- **Element Classification** - Automatic detection of text, vector, and image elements
+- **Unified Pipeline API** - Complete workflow from image to export in 3 lines of code
+- **Custom Weights** - Load fine-tuned models from local or remote storage
+- **OCR Support** - Text detection and recognition (coming soon)
+
+## Advanced Usage
+
+For fine-grained control, use the low-level API:
+
+```python
+from layerd import LayerD
+
+layerd = LayerD(matting_hf_card="cyberagent/layerd-birefnet").to("cpu")
+layers = layerd.decompose(image)
+# ... custom postprocessing ...
+```
+
+See the [Inference Guide](docs/inference.md) for low-level API details.
 
 ## Using Custom Weights
 
@@ -71,8 +96,10 @@ layerd = LayerD(matting_weight_path="gs://my-bucket/models/birefnet.pth")
 
 ## Documentation
 
+- **[Pipeline Guide](docs/pipeline.md)** - High-level API usage and configuration
+- **[Export Guide](docs/export.md)** - SVG and PSD export documentation
 - **[Installation Guide](docs/installation.md)** - Detailed setup instructions
-- **[Inference Guide](docs/inference.md)** - Using LayerD for inference (CLI and Python API)
+- **[Inference Guide](docs/inference.md)** - Low-level API (CLI and Python)
 - **[Training Guide](docs/training.md)** - Training and fine-tuning models
 - **[Evaluation Guide](docs/evaluation.md)** - Evaluating layer decomposition quality
 - **[Architecture](docs/architecture.md)** - Code architecture and design patterns
