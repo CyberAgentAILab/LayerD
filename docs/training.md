@@ -120,6 +120,10 @@ epochs: 100
 learning_rate: 1e-4
 weight_decay: 1e-4
 
+# Checkpoints
+ckpt: null          # Load checkpoint and resume optimizer/scheduler state
+resume_from: null   # Load model weights only (flexible checkpoint loading)
+
 # Optimization
 optimizer: "adamw"
 scheduler: "cosine"
@@ -208,6 +212,49 @@ uv run python ./tools/train.py \
   epochs=50 \
   device=cuda
 ```
+
+### Resuming Training
+
+LayerD provides two options for loading checkpoints during training:
+
+#### Using `ckpt` (Full Resume)
+
+The `ckpt` parameter loads a complete checkpoint including model weights, optimizer state, and scheduler state. Use this to resume interrupted training:
+
+```bash
+uv run python ./tools/train.py \
+  config_path=./src/layerd/configs/train.yaml \
+  data_root=/path/to/dataset \
+  out_dir=/path/to/output \
+  ckpt=/path/to/checkpoint.pth \
+  device=cuda
+```
+
+This continues training from the exact state where it was interrupted, including the learning rate schedule and optimizer momentum.
+
+#### Using `resume_from` (Weights Only)
+
+The `resume_from` parameter loads only the model weights without optimizer or scheduler state. Use this for:
+
+- Fine-tuning from a pre-trained model
+- Starting fresh training with initialized weights
+- Transfer learning scenarios
+
+```bash
+uv run python ./tools/train.py \
+  config_path=./src/layerd/configs/train.yaml \
+  data_root=/path/to/dataset \
+  out_dir=/path/to/output \
+  resume_from=/path/to/weights.pth \
+  device=cuda
+```
+
+**Key Differences:**
+
+| Parameter | Loads Model Weights | Loads Optimizer State | Loads Scheduler State | Use Case |
+| --------- | ------------------- | --------------------- | --------------------- | -------- |
+| `ckpt` | ✓ | ✓ | ✓ | Resume interrupted training |
+| `resume_from` | ✓ | ✗ | ✗ | Fine-tuning, transfer learning |
 
 ### Example Training Commands
 

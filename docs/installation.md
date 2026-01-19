@@ -63,7 +63,26 @@ This includes:
 - Training framework and utilities
 - PyTorch distributed training support
 
-### Option 4: All Features
+### Option 4: With OCR Support
+
+If you want to use OCR (Optical Character Recognition) for text detection:
+
+```bash
+pip install "git+https://github.com/CyberAgentAILab/LayerD.git#egg=layerd[ocr]"
+```
+
+This includes:
+
+- All inference capabilities
+- OCR backends (EAST and GOT-OCR2)
+- Text detection during layer organization
+
+**OCR Backend Requirements:**
+
+- **EAST**: CPU-compatible, ~97MB model, lightweight text detection
+- **GOT-OCR2**: CUDA-only, ~1.4GB model, full OCR with text recognition
+
+### Option 5: All Features
 
 Install with all optional dependencies:
 
@@ -71,9 +90,9 @@ Install with all optional dependencies:
 pip install "git+https://github.com/CyberAgentAILab/LayerD.git#egg=layerd[all]"
 ```
 
-This includes everything: inference, dataset generation, and training.
+This includes everything: inference, dataset generation, training, and OCR support.
 
-### Option 5: Development Setup (For Contributors)
+### Option 6: Development Setup (For Contributors)
 
 LayerD uses [uv](https://docs.astral.sh/uv/) to manage the development environment.
 

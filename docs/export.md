@@ -50,11 +50,13 @@ svg_string = result.to_svg(image_mode="base64")
 ```
 
 **Advantages:**
+
 - Single self-contained file
 - No external dependencies
 - Easy to share and view
 
 **Disadvantages:**
+
 - Larger file size (~33% larger than binary)
 - Not suitable for very large images
 
@@ -73,6 +75,7 @@ with open("output.svg", "w") as f:
 ```
 
 This creates:
+
 ```
 ./output.svg
 ./images/element_0.png
@@ -82,11 +85,13 @@ This creates:
 ```
 
 **Advantages:**
+
 - Smaller SVG file size
 - Images can be edited separately
 - Better for version control (text diff-able SVG)
 
 **Disadvantages:**
+
 - Multiple files to manage
 - Requires preserving directory structure
 
@@ -109,6 +114,7 @@ The generated SVG has a clean structure with metadata:
 ```
 
 **Metadata Attributes:**
+
 - `data-type`: Element type ("text", "vector", or "image")
 - `data-id`: Unique element identifier
 
@@ -117,6 +123,7 @@ These attributes enable round-trip conversion and programmatic manipulation.
 ### Compatibility
 
 SVG files can be opened in:
+
 - **Web Browsers** - Chrome, Firefox, Safari, Edge (native support)
 - **Vector Editors** - Adobe Illustrator, Inkscape, Figma
 - **Image Viewers** - Most modern image viewers
@@ -141,6 +148,7 @@ with open("output.psd", "wb") as f:
 ### Layer Structure
 
 In Photoshop, you'll see:
+
 - Each element as a separate layer
 - Layers named by element ID and type (e.g., "element_0_text")
 - Original positioning preserved
@@ -149,11 +157,13 @@ In Photoshop, you'll see:
 ### File Size Considerations
 
 PSD files are typically **larger than SVG** because they store full raster data:
+
 - SVG with base64: ~33% larger than PNG
 - SVG with external: Small text file + PNG images
 - PSD: Similar to sum of all PNGs + overhead
 
 For a design with 10 elements:
+
 - SVG (base64): ~500 KB
 - SVG (external): ~50 KB SVG + 450 KB images
 - PSD: ~600 KB
@@ -161,6 +171,7 @@ For a design with 10 elements:
 ### Compatibility
 
 PSD files can be opened in:
+
 - **Adobe Photoshop** - Native format
 - **GIMP** - Open source image editor
 - **Affinity Photo** - Professional photo editor
@@ -169,7 +180,7 @@ PSD files can be opened in:
 ## Format Comparison
 
 | Feature | SVG | PSD |
-|---------|-----|-----|
+| ------- | --- | --- |
 | File size | Small-Medium | Large |
 | Web display | Native browser support | Requires conversion |
 | Editing tools | Browsers, Illustrator, Figma | Photoshop, GIMP |
@@ -182,20 +193,23 @@ PSD files can be opened in:
 
 ## Choosing a Format
 
-### Use SVG When:
+### Use SVG When
+
 - You need web compatibility
 - File size is important
 - You want version control-friendly output
 - You'll edit in vector tools (Illustrator, Figma)
 - You want programmatic manipulation
 
-### Use PSD When:
+### Use PSD When
+
 - You're working in Photoshop
 - You need native Adobe ecosystem support
 - You want full raster editing capabilities
 - Single-file distribution is important
 
-### Use Both:
+### Use Both
+
 Export to both formats for maximum flexibility:
 
 ```python
@@ -247,6 +261,7 @@ for design_path in designs_dir.glob("*.png"):
 ```
 
 This creates:
+
 ```
 ./output/
   design1.svg
@@ -318,15 +333,18 @@ def to_svg(
 Generate SVG string representation.
 
 **Parameters:**
+
 - `image_mode`: Image embedding mode
   - `"base64"` (default): Embed images as data URIs
   - `"external"`: Save images to directory and reference by path
 - `image_dir`: Directory for external images (required if `image_mode="external"`)
 
 **Returns:**
+
 - SVG string
 
 **Raises:**
+
 - `ValueError`: If `image_mode="external"` but `image_dir` not provided
 
 ### PipelineResult.to_psd()
@@ -338,6 +356,7 @@ def to_psd(self) -> bytes
 Generate PSD bytes representation.
 
 **Returns:**
+
 - PSD file as bytes
 
 ### PipelineResult.save()
@@ -354,12 +373,16 @@ def save(
 Save result to file with format auto-detection.
 
 **Parameters:**
-- `path`: Output file path
+
+- `path`: Output file path (supports various file systems via `fsspec`: local paths, `gs://`, `s3://`, `abfs://`, `https://`)
 - `format`: Export format (`"svg"` or `"psd"`), auto-detected from extension if `None`
 - `**kwargs`: Format-specific options passed to `to_svg()` or `to_psd()`
 
 **Raises:**
+
 - `ValueError`: If format cannot be determined or is unsupported
+
+**Note:** This method supports various file systems through `fsspec`, allowing you to save directly to cloud storage (e.g., Google Cloud Storage, Amazon S3, Azure Blob Storage) or HTTP endpoints.
 
 ## Examples
 
