@@ -12,12 +12,14 @@
 ### When to Use LayerDPipeline
 
 Use `LayerDPipeline` when you want:
+
 - A complete end-to-end workflow with minimal code
 - Organized elements with type classification
 - Direct export to SVG or PSD formats
 - Sensible defaults with easy customization
 
 Use the low-level `LayerD` class when you need:
+
 - Fine-grained control over each processing step
 - Custom postprocessing beyond the standard pipeline
 - Integration with existing layer processing code
@@ -140,9 +142,9 @@ for i, layer in enumerate(result.layers):
 width, height = result.canvas_size
 print(f"Original size: {width}x{height}")
 
-# OCR result (future feature - currently None)
+# OCR result (only available if ocr_backend was specified)
 if result.ocr_result:
-    print("OCR data:", result.ocr_result)
+    print(f"Detected {len(result.ocr_result)} text regions")
 ```
 
 ### Exporting Results
@@ -351,6 +353,9 @@ class LayerDPipeline:
         labeler: ElementLabeler | None = <default EntropyLabeler>,
         labeler_threshold: float = 5.0,  # Only used if labeler not provided
 
+        # OCR parameters
+        ocr_backend: Literal["east", "got-ocr2"] | None = None,  # OCR backend selection
+
         # Device
         device: str = "cpu",
     ) -> None
@@ -468,26 +473,51 @@ pipeline = LayerDPipeline(
 result = pipeline(image)
 ```
 
-## Future Features
+## OCR Support
 
-### OCR Integration
+LayerD supports optional OCR (Optical Character Recognition) for text detection in decomposed layers. OCR helps identify text elements during the organization phase.
 
-OCR support is planned for a future release (see [GitHub Issue #86](https://github.com/CyberAgentAILab/LayerD/issues/86)). The pipeline already has an `ocr_result` field reserved for this feature:
+### Installation
 
-```python
-result = pipeline(image)
+To use OCR, install LayerD with the `ocr` extra:
 
-# Currently None, will contain OCR data in future release
-if result.ocr_result:
-    for block in result.ocr_result["blocks"]:
-        print(f"Text: {block['text']}")
+```bash
+pip install "git+https://github.com/CyberAgentAILab/LayerD.git#egg=layerd[ocr]"
 ```
 
-The OCR integration will enable:
-- Text detection and recognition
-- Automatic text element classification
-- Text layer organization
-- OCR-guided element extraction
+See the [Installation Guide](installation.md) for more details.
+
+### OCR Backends
+
+LayerD provides two OCR backend options:
+
+| Backend | Size | Device | Recognition | Use Case |
+| ------- | ---- | ------ | ----------- | -------- |
+| **EAST** | ~97MB | CPU/CUDA | Detection only | Lightweight, fast text detection |
+| **GOT-OCR2** | ~1.4GB | CUDA only | Full OCR | Complete text recognition with bounding boxes |
+
+### Using OCR
+
+Enable OCR by specifying the backend when creating the pipeline:
+
+```python
+from layerd import LayerDPipeline
+
+# Use EAST backend (lightweight, CPU-compatible)
+pipeline = LayerDPipeline(ocr_backend="east", device="cpu")
+
+# Use GOT-OCR2 backend (full OCR, requires CUDA)
+pipeline = LayerDPipeline(ocr_backend="got-ocr2", device="cuda")
+
+# Process image with OCR
+result = pipeline(image)
+
+# Access OCR results
+if result.ocr_result:
+    print(f"Detected {len(result.ocr_result)} text regions")
+```
+
+**Note:** OCR is disabled by default (`ocr_backend=None`). You must explicitly specify a backend to enable it.
 
 ## Troubleshooting
 

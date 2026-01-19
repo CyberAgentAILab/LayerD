@@ -141,8 +141,17 @@ For low-level API users, only the first step (`LayerD.decompose()`) is executed,
 
 ## Key Design Patterns
 
-1. **Factory Pattern**: Models are created via `build_matting()`, `build_inpaint()`, and `build_exporter()` functions with string identifiers
-2. **Abstract Base Classes**: All models inherit from base classes (`BaseMatting`, `BaseInpaint`, `BaseExporter`, `BaseOCR`, `ElementLabeler`) with validation
+1. **Factory Pattern**: Models are created via factory functions with string identifiers:
+   - `build_matting()`: Creates matting models (e.g., "birefnet")
+   - `build_inpaint()`: Creates inpainting models (e.g., "lama")
+   - `build_exporter()`: Creates exporters (e.g., "svg", "psd")
+   - `build_ocr()`: Creates OCR backends (e.g., "east", "got-ocr2")
+2. **Abstract Base Classes**: All models inherit from base classes with validation:
+   - `BaseMatting`: Matting model interface
+   - `BaseInpaint`: Inpainting model interface
+   - `BaseExporter`: Exporter interface
+   - `BaseOCR`: OCR backend interface (with fsspec support)
+   - `ElementLabeler`: Classification interface
 3. **Iterative Decomposition**: `decompose()` runs `_decompose_step()` until no more layers or max iterations reached
 4. **PIL Image Interface**: Main API uses PIL Images; internal processing uses numpy arrays
 5. **Pluggable Components**: Classification, OCR, and export modules use strategy pattern for extensibility
